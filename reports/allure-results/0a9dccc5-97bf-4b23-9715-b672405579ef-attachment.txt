@@ -1,0 +1,5 @@
+2026-08-27 17:09:52 - INFO - 📤 请求: POST https://jsonplaceholder.typicode.com/users
+2026-08-27 17:09:52 - INFO -    请求体: {"username": "testuser", "email": "test@example.com"}
+2026-08-27 17:09:53 - INFO - 📥 响应: 状态码=201, 耗时=0.793s
+2026-08-27 17:09:53 - INFO -    响应体: {"username": "testuser", "email": "test@example.com", "id": 11}
+2026-08-27 17:09:53 - INFO - ✅ 状态码断言通过: 201 == [201, 400]

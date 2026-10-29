@@ -1,0 +1,6 @@
+2026-08-27 17:09:33 - INFO - 📤 请求: PATCH https://jsonplaceholder.typicode.com/posts/1
+2026-08-27 17:09:33 - INFO -    请求体: {"title": "部分更新标题"}
+2026-08-27 17:09:38 - INFO - 📥 响应: 状态码=200, 耗时=1.550s
+2026-08-27 17:09:38 - INFO -    响应体: {"userId": 1, "id": 1, "title": "部分更新标题", "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"}
+2026-08-27 17:09:38 - INFO - ✅ 状态码断言通过: 200 == 200
+2026-08-27 17:09:38 - INFO - ✅ 包含断言通过: {'title': '部分更新标题'}

@@ -1,0 +1,173 @@
+# 用户模块接口测试数据
+# 测试对象：jsonplaceholder.typicode.com/users
+
+test_cases:
+  # ===== 获取用户列表 =====
+  - name: "TC-USER-001: 正常获取用户列表"
+    request:
+      method: GET
+      url: "/users"
+    expected:
+      status_code: 200
+      response_time: 3
+      list_not_empty: true
+
+  - name: "TC-USER-002: 分页获取用户列表"
+    request:
+      method: GET
+      url: "/users"
+      params:
+        _page: 1
+        _limit: 5
+    expected:
+      status_code: 200
+      list_length: 5
+
+  - name: "TC-USER-003: 获取用户列表_page为0"
+    request:
+      method: GET
+      url: "/users"
+      params:
+        _page: 0
+    expected:
+      status_code: 200
+
+  # ===== 获取单个用户 =====
+  - name: "TC-USER-004: 正常获取用户详情"
+    request:
+      method: GET
+      url: "/users/1"
+    expected:
+      status_code: 200
+      json_contains:
+        id: 1
+        name: "Leanne Graham"
+
+  - name: "TC-USER-005: 获取不存在的用户"
+    request:
+      method: GET
+      url: "/users/9999"
+    expected:
+      status_code: 404
+
+  - name: "TC-USER-006: 用户ID为非数字"
+    request:
+      method: GET
+      url: "/users/abc"
+    expected:
+      status_code: [404, 500]
+
+  # ===== 创建用户 =====
+  - name: "TC-USER-007: 正常创建用户"
+    request:
+      method: POST
+      url: "/users"
+      json:
+        name: "Test User"
+        username: "testuser"
+        email: "test@example.com"
+        phone: "123-456-7890"
+    expected:
+      status_code: 201
+      json_contains:
+        name: "Test User"
+        username: "testuser"
+        email: "test@example.com"
+
+  - name: "TC-USER-008: 创建用户缺少必填字段name"
+    request:
+      method: POST
+      url: "/users"
+      json:
+        username: "testuser"
+        email: "test@example.com"
+    expected:
+      status_code: [201, 400]
+
+  - name: "TC-USER-009: 创建用户email格式错误"
+    request:
+      method: POST
+      url: "/users"
+      json:
+        name: "Test User"
+        email: "not-an-email"
+    expected:
+      status_code: [201, 400]
+
+  - name: "TC-USER-010: 创建用户name为空字符串"
+    request:
+      method: POST
+      url: "/users"
+      json:
+        name: ""
+        email: "test@example.com"
+    expected:
+      status_code: [201, 400]
+
+  # ===== 更新用户 =====
+  - name: "TC-USER-011: 正常更新用户(PUT)"
+    request:
+      method: PUT
+      url: "/users/1"
+      json:
+        id: 1
+        name: "Updated User"
+        username: "updateduser"
+        email: "updated@example.com"
+    expected:
+      status_code: 200
+      json_contains:
+        name: "Updated User"
+
+  - name: "TC-USER-012: 更新不存在的用户"
+    request:
+      method: PUT
+      url: "/users/9999"
+      json:
+        name: "Test"
+    expected:
+      status_code: [404, 500]
+
+  - name: "TC-USER-013: 部分更新用户(PATCH)"
+    request:
+      method: PATCH
+      url: "/users/1"
+      json:
+        name: "Partial Update"
+    expected:
+      status_code: 200
+      json_contains:
+        name: "Partial Update"
+
+  # ===== 删除用户 =====
+  - name: "TC-USER-014: 正常删除用户"
+    request:
+      method: DELETE
+      url: "/users/1"
+    expected:
+      status_code: 200
+
+  - name: "TC-USER-015: 删除不存在的用户"
+    request:
+      method: DELETE
+      url: "/users/9999"
+    expected:
+      status_code: [404, 200]
+
+  # ===== 响应时间 =====
+  - name: "TC-USER-016: 获取用户列表响应时间"
+    request:
+      method: GET
+      url: "/users"
+    expected:
+      status_code: 200
+      response_time: 5
+
+  # ===== 响应头 =====
+  - name: "TC-USER-017: 验证响应Content-Type"
+    request:
+      method: GET
+      url: "/users/1"
+    expected:
+      status_code: 200
+      header_exists: "content-type"

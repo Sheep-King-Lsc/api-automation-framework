@@ -1,0 +1,5 @@
+[32mINFO    [0m api_test:request_util.py:42 📤 请求: GET https://jsonplaceholder.typicode.com/posts
+[32mINFO    [0m api_test:request_util.py:44    参数: {'q': 'sunt'}
+[32mINFO    [0m api_test:request_util.py:52 📥 响应: 状态码=200, 耗时=0.485s
+[32mINFO    [0m api_test:request_util.py:55    响应体: [{"userId": 1, "id": 1, "title": "sunt aut facere repellat provident occaecati excepturi optio reprehenderit", "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"}, {"userId": 1, "id": 4, "title": "eum et est occaecati", "body": "ullam et saepe reiciendis voluptatem adipisci\nsit amet autem assumenda provident rerum culpa\nquis hic commodi nesciunt rem tenetur doloremque ipsam 
+[32mINFO    [0m api_test:assert_util.py:29 ✅ 状态码断言通过: 200 == 200

@@ -1,0 +1,1 @@
+[32mINFO    [0m api_test:conftest.py:24 🚀 测试开始，基础URL: <property object at 0x0000028D6FC88BD0>

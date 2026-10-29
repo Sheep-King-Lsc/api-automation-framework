@@ -1,0 +1,5 @@
+[32mINFO    [0m api_test:request_util.py:42 📤 请求: POST https://jsonplaceholder.typicode.com/posts
+[32mINFO    [0m api_test:request_util.py:46    请求体: {"body": "只有描述没有标题", "userId": 1}
+[32mINFO    [0m api_test:request_util.py:52 📥 响应: 状态码=201, 耗时=4.996s
+[32mINFO    [0m api_test:request_util.py:55    响应体: {"body": "只有描述没有标题", "userId": 1, "id": 101}
+[32mINFO    [0m api_test:assert_util.py:29 ✅ 状态码断言通过: 201 == [201, 400]

@@ -1,0 +1,6 @@
+2026-08-27 17:09:12 - INFO - 📤 请求: GET https://jsonplaceholder.typicode.com/posts
+2026-08-27 17:09:12 - INFO -    参数: {'_sort': 'id', '_order': 'desc'}
+2026-08-27 17:09:13 - INFO - 📥 响应: 状态码=200, 耗时=0.484s
+2026-08-27 17:09:13 - INFO -    响应体: [{"userId": 10, "id": 100, "title": "at nam consequatur ea labore ea harum", "body": "cupiditate quo est a modi nesciunt soluta\nipsa voluptas error itaque dicta in\nautem qui minus magnam et distinctio eum\naccusamus ratione error aut"}, {"userId": 10, "id": 99, "title": "temporibus sit alias delectus eligendi possimus magni", "body": "quo deleniti praesentium dicta non quod\naut est molestias\nmolestias et officia quis nihil\nitaque dolorem quia"}, {"userId": 10, "id": 98, "title": "laboriosam
+2026-08-27 17:09:13 - INFO - ✅ 状态码断言通过: 200 == 200
+2026-08-27 17:09:13 - INFO - ✅ 列表非空断言通过: 长度=100

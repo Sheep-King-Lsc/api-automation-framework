@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8"/>
+    <title id="head-title">report.html</title>
+      <style type="text/css">body {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 12px;
+  /* do not increase min-width as some may use split screens */
+  min-width: 800px;
+  color: #999;
+}
+
+h1 {
+  font-size: 24px;
+  color: black;
+}
+
+h2 {
+  font-size: 16px;
+  color: black;
+}
+
+p {
+  color: black;
+}
+
+a {
+  color: #999;
+}
+
+table {
+  border-collapse: collapse;
+}
+
+/******************************
+ * SUMMARY INFORMATION
+ ******************************/
+#environment td {
+  padding: 5px;
+  border: 1px solid #e6e6e6;
+  vertical-align: top;
+}
+#environment tr:nth-child(odd) {
+  background-color: #f6f6f6;
+}
+#environment ul {
+  margin: 0;
+  padding: 0 20px;
+}
+
+/******************************
+ * TEST RESULT COLORS
+ ******************************/
+span.passed,
+.passed .col-result {
+  color: green;
+}
+
+span.skipped,
+span.xfailed,
+span.rerun,
+.skipped .col-result,
+.xfailed .col-result,
+.rerun .col-result {
+  color: orange;
+}
+
+span.error,
+span.failed,
+span.xpassed,
+.error .col-result,
+.failed .col-result,
+.xpassed .col-result {
+  color: red;
+}
+
+.col-links__extra {
+  margin-right: 3px;
+}
+
+/******************************
+ * RESULTS TABLE
+ *
+ * 1. Table Layout
+ * 2. Extra
+ * 3. Sorting items
+ *
+ ******************************/
+/*------------------
+ * 1. Table Layout
+ *------------------*/
+#results-table {
+  border: 1px solid #e6e6e6;
+  color: #999;
+  font-size: 12px;
+  width: 100%;
+}
+#results-table th,
+#results-table td {
+  padding: 5px;
+  border: 1px solid #e6e6e6;
+  text-align: left;
+}
+#results-table th {
+  font-weight: bold;
+}
+
+/*------------------
+ * 2. Extra
+ *------------------*/
+.logwrapper {
+  max-height: 230px;
+  overflow-y: scroll;
+  background-color: #e6e6e6;
+}
+.logwrapper.expanded {
+  max-height: none;
+}
+.logwrapper.expanded .logexpander:after {
+  content: "collapse [-]";
+}
+.logwrapper .logexpander {
+  z-index: 1;
+  position: sticky;
+  top: 10px;
+  width: max-content;
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 5px 7px;
+  margin: 10px 0 10px calc(100% - 80px);
+  cursor: pointer;
+  background-color: #e6e6e6;
+}
+.logwrapper .logexpander:after {
+  content: "expand [+]";
+}
+.logwrapper .logexpander:hover {
+  color: #000;
+  border-color: #000;
+}
+.logwrapper .log {
+  min-height: 40px;
+  position: relative;
+  top: -50px;
+  height: calc(100% + 50px);
+  border: 1px solid #e6e6e6;
+  color: black;
+  display: block;
+  font-family: "Courier New", Courier, monospace;
+  padding: 5px;
+  padding-right: 80px;
+  white-space: pre-wrap;
+}
+
+div.media {
+  border: 1px solid #e6e6e6;
+  float: right;
+  height: 240px;
+  margin: 0 5px;
+  overflow: hidden;
+  width: 320px;
+}
+
+.media-container {
+  display: grid;
+  grid-template-columns: 25px auto 25px;
+  align-items: center;
+  flex: 1 1;
+  overflow: hidden;
+  height: 200px;
+}
+
+.media-container--fullscreen {
+  grid-template-columns: 0px auto 0px;
+}
+
+.media-container__nav--right,
+.media-container__nav--left {
+  text-align: center;
+  cursor: pointer;
+}
+
+.media-container__viewport {
+  cursor: pointer;
+  text-align: center;
+  height: inherit;
+}
+.media-container__viewport img,
+.media-container__viewport video {
+  object-fit: cover;
+  width: 100%;
+  max-height: 100%;
+}
+
+.media__name,
+.media__counter {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  flex: 0 0 25px;
+  align-items: center;
+}
+
+.collapsible td:not(.col-links) {
+  cursor: pointer;
+}
+.collapsible td:not(.col-links):hover::after {
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.col-result {
+  width: 130px;
+}
+.col-result:hover::after {
+  content: " (hide details)";
+}
+
+.col-result.collapsed:hover::after {
+  content: " (show details)";
+}
+
+#environment-header h2:hover::after {
+  content: " (hide details)";
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+#environment-header.collapsed h2:hover::after {
+  content: " (show details)";
+  color: #bbb;
+  font-style: italic;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/*------------------
+ * 3. Sorting items
+ *------------------*/
+.sortable {
+  cursor: pointer;
+}
+.sortable.desc:after {
+  content: " ";
+  position: relative;
+  left: 5px;
+  bottom: -12.5px;
+  border: 10px solid #4caf50;
+  border-bottom: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+.sortable.asc:after {
+  content: " ";
+  position: relative;
+  left: 5px;
+  bottom: 12.5px;
+  border: 10px solid #4caf50;
+  border-top: 0;
+  border-left-color: transparent;
+  border-right-color: transparent;
+}
+
+.hidden, .summary__reload__button.hidden {
+  display: none;
+}
+
+.summary__data {
+  flex: 0 0 550px;
+}
+.summary__reload {
+  flex: 1 1;
+  display: flex;
+  justify-content: center;
+}
+.summary__reload__button {
+  flex: 0 0 300px;
+  display: flex;
+  color: white;
+  font-weight: bold;
+  background-color: #4caf50;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.summary__reload__button:hover {
+  background-color: #46a049;
+}
+.summary__spacer {
+  flex: 0 0 550px;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+}
+
+.filters,
+.collapse {
+  display: flex;
+  align-items: center;
+}
+.filters button,
+.collapse button {
+  color: #999;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+.filters button:hover,
+.collapse button:hover {
+  color: #ccc;
+}
+
+.filter__label {
+  margin-right: 10px;
+}
+
+      </style>
+    
+  </head>
+  <body>
+    <h1 id="title">report.html</h1>
+    <p>Report generated on 27-Aug-2026 at 17:10:00 by <a href="https://pypi.python.org/pypi/pytest-html">pytest-html</a>
+        v4.2.0</p>
+    <div id="environment-header">
+      <h2>Environment</h2>
+    </div>
+    <table id="environment"></table>
+    <!-- TEMPLATES -->
+      <template id="template_environment_row">
+      <tr>
+        <td></td>
+        <td></td>
+      </tr>
+    </template>
+    <template id="template_results-table__body--empty">
+      <tbody class="results-table-row">
+        <tr id="not-found-message">
+          <td colspan="4">No results found. Check the filters.</td>
+        </tr>
+      </tbody>
+    </template>
+    <template id="template_results-table__tbody">
+      <tbody class="results-table-row">
+        <tr class="collapsible">
+        </tr>
+        <tr class="extras-row">
+          <td class="extra" colspan="4">
+            <div class="extraHTML"></div>
+            <div class="media">
+              <div class="media-container">
+                  <div class="media-container__nav--left">&lt;</div>
+                  <div class="media-container__viewport">
+                    <img src="" />
+                    <video controls>
+                      <source src="" type="video/mp4">
+                    </video>
+                  </div>
+                  <div class="media-container__nav--right">&gt;</div>
+                </div>
+                <div class="media__name"></div>
+                <div class="media__counter"></div>
+            </div>
+            <div class="logwrapper">
+              <div class="logexpander"></div>
+              <div class="log"></div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </template>
+    <!-- END TEMPLATES -->
+    <div class="summary">
+      <div class="summary__data">
+        <h2>Summary</h2>
+        <div class="additional-summary prefix">
+        </div>
+        <p class="run-count">33 tests took 00:01:10.</p>
+        <p class="filter">(Un)check the boxes to filter the results.</p>
+        <div class="summary__reload">
+          <div class="summary__reload__button hidden" onclick="location.reload()">
+            <div>There are still tests running. <br />Reload this page to get the latest results!</div>
+          </div>
+        </div>
+        <div class="summary__spacer"></div>
+        <div class="controls">
+          <div class="filters">
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="failed" disabled>
+            <span class="failed">0 Failed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="passed" >
+            <span class="passed">33 Passed,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="skipped" disabled>
+            <span class="skipped">0 Skipped,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xfailed" disabled>
+            <span class="xfailed">0 Expected failures,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="xpassed" disabled>
+            <span class="xpassed">0 Unexpected passes,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="error" disabled>
+            <span class="error">0 Errors,</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="rerun" >
+            <span class="rerun">1 Reruns</span>
+            <input checked="true" class="filter" name="filter_checkbox" type="checkbox" data-test-result="retried" disabled>
+            <span class="retried">0 Retried,</span>
+          </div>
+          <div class="collapse">
+            <button id="show_all_details">Show all details</button>&nbsp;/&nbsp;<button id="hide_all_details">Hide all details</button>
+          </div>
+        </div>
+      </div>
+      <div class="additional-summary summary">
+      </div>
+      <div class="additional-summary postfix">
+      </div>
+    </div>
+    <table id="results-table">
+      <thead id="results-table-head">
+        <tr>
+          <th class="sortable" data-column-type="result">Result</th>
+          <th class="sortable" data-column-type="testId">Test</th>
+          <th class="sortable" data-column-type="duration">Duration</th>
+          <th>Links</th>
+        </tr>
+      </thead>
+    </table>
+  <footer>
+    <div id="data-container" data-jsonblob="{&#34;environment&#34;: {&#34;Python&#34;: &#34;3.11.9&#34;, &#34;Platform&#34;: &#34;Windows-10-10.0.26100-SP0&#34;, &#34;Packages&#34;: {&#34;pytest&#34;: &#34;9.1.1&#34;, &#34;pluggy&#34;: &#34;1.6.0&#34;}, &#34;Plugins&#34;: {&#34;allure-pytest&#34;: &#34;2.16.0&#34;, &#34;html&#34;: &#34;4.2.0&#34;, &#34;metadata&#34;: &#34;3.1.1&#34;, &#34;rerunfailures&#34;: &#34;16.6&#34;}, &#34;JAVA_HOME&#34;: &#34;C:\\Program Files (x86)\\Java\\jdk1.8.0_131&#34;}, &#34;tests&#34;: {&#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-001: \u6b63\u5e38\u83b7\u53d6\u5546\u54c1\u5217\u8868]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Rerun&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-001: \u6b63\u5e38\u83b7\u53d6\u5546\u54c1\u5217\u8868]&#34;, &#34;duration&#34;: &#34;00:00:03&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Rerun&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-001: \u6b63\u5e38\u83b7\u53d6\u5546\u54c1\u5217\u8868]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:03&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;D:\\Python\\Lib\\site-packages\\urllib3\\connectionpool.py:464: in _make_request\n    self._validate_conn(conn)\nD:\\Python\\Lib\\site-packages\\urllib3\\connectionpool.py:1106: in _validate_conn\n    conn.connect()\nD:\\Python\\Lib\\site-packages\\urllib3\\connection.py:796: in connect\n    sock_and_verified = _ssl_wrap_socket_and_match_hostname(\nD:\\Python\\Lib\\site-packages\\urllib3\\connection.py:975: in _ssl_wrap_socket_and_match_hostname\n    ssl_sock = ssl_wrap_socket(\nD:\\Python\\Lib\\site-packages\\urllib3\\util\\ssl_.py:433: in ssl_wrap_socket\n    ssl_sock = _ssl_wrap_socket_impl(sock, context, tls_in_tls, server_hostname)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nD:\\Python\\Lib\\site-packages\\urllib3\\util\\ssl_.py:477: in _ssl_wrap_socket_impl\n    return ssl_context.wrap_socket(sock, server_hostname=server_hostname)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nD:\\Python\\Lib\\ssl.py:517: in wrap_socket\n    return self.sslsocket_class._create(\nD:\\Python\\Lib\\ssl.py:1104: in _create\n    self.do_handshake()\nD:\\Python\\Lib\\ssl.py:1382: in do_handshake\n    self._sslobj.do_handshake()\nE   TimeoutError: _ssl.c:989: The handshake operation timed out\n\nThe above exception was the direct cause of the following exception:\nD:\\Python\\Lib\\site-packages\\requests\\adapters.py:696: in send\n    resp = conn.urlopen(\nD:\\Python\\Lib\\site-packages\\urllib3\\connectionpool.py:842: in urlopen\n    retries = retries.increment(\nD:\\Python\\Lib\\site-packages\\urllib3\\util\\retry.py:498: in increment\n    raise reraise(type(error), error, _stacktrace)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nD:\\Python\\Lib\\site-packages\\urllib3\\util\\util.py:39: in reraise\n    raise value\nD:\\Python\\Lib\\site-packages\\urllib3\\connectionpool.py:788: in urlopen\n    response = self._make_request(\nD:\\Python\\Lib\\site-packages\\urllib3\\connectionpool.py:488: in _make_request\n    raise new_e\nD:\\Python\\Lib\\site-packages\\urllib3\\connectionpool.py:466: in _make_request\n    self._raise_timeout(err=e, url=url, timeout_value=conn.timeout)\nD:\\Python\\Lib\\site-packages\\urllib3\\connectionpool.py:367: in _raise_timeout\n    raise ReadTimeoutError(\nE   urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host=&amp;#x27;jsonplaceholder.typicode.com&amp;#x27;, port=443): Read timed out. (read timeout=10)\n\nDuring handling of the above exception, another exception occurred:\ntests\\test_product_api.py:30: in test_product_api\n    response = req.request(method, url, params=params, json=json_data)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ncommon\\request_util.py:74: in request\n    response = self.session.request(method.upper(), full_url, **kwargs)\n               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nD:\\Python\\Lib\\site-packages\\requests\\sessions.py:651: in request\n    resp = self.send(prep, **send_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nD:\\Python\\Lib\\site-packages\\requests\\sessions.py:784: in send\n    r = adapter.send(request, **kwargs)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nD:\\Python\\Lib\\site-packages\\requests\\adapters.py:742: in send\n    raise ReadTimeout(e, request=request)\nE   requests.exceptions.ReadTimeout: HTTPSConnectionPool(host=&amp;#x27;jsonplaceholder.typicode.com&amp;#x27;, port=443): Read timed out. (read timeout=10)\n&#34;}, {&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-001: \u6b63\u5e38\u83b7\u53d6\u5546\u54c1\u5217\u8868]&#34;, &#34;duration&#34;: &#34;00:00:03&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-001: \u6b63\u5e38\u83b7\u53d6\u5546\u54c1\u5217\u8868]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:03&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;---------------------------- Captured stderr setup -----------------------------\n2026-08-27 17:08:51 - INFO - \ud83d\ude80 \u6d4b\u8bd5\u5f00\u59cb\uff0c\u57fa\u7840URL: https://jsonplaceholder.typicode.com\n\n------------------------------ Captured log setup ------------------------------\nINFO     api_test:conftest.py:24 \ud83d\ude80 \u6d4b\u8bd5\u5f00\u59cb\uff0c\u57fa\u7840URL: https://jsonplaceholder.typicode.com\n\n----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:08:51 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts\n2026-08-27 17:09:02 - ERROR - \u274c \u8bf7\u6c42\u8d85\u65f6: https://jsonplaceholder.typicode.com/posts\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts\nERROR    api_test:request_util.py:78 \u274c \u8bf7\u6c42\u8d85\u65f6: https://jsonplaceholder.typicode.com/posts\n\n\n----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:04 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts\n2026-08-27 17:09:07 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=2.197s\n2026-08-27 17:09:07 - INFO -    \u54cd\u5e94\u4f53: [{&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;sunt aut facere repellat provident occaecati excepturi optio reprehenderit&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto&amp;quot;}, {&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 2, &amp;quot;title&amp;quot;: &amp;quot;qui est esse&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;est rerum tempore vitae\\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\\nqu\n2026-08-27 17:09:07 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:09:07 - INFO - \u2705 \u5217\u8868\u975e\u7a7a\u65ad\u8a00\u901a\u8fc7: \u957f\u5ea6=100\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=2.197s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: [{&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;sunt aut facere repellat provident occaecati excepturi optio reprehenderit&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto&amp;quot;}, {&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 2, &amp;quot;title&amp;quot;: &amp;quot;qui est esse&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;est rerum tempore vitae\\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\\nqu\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:109 \u2705 \u5217\u8868\u975e\u7a7a\u65ad\u8a00\u901a\u8fc7: \u957f\u5ea6=100\n\n&#34;}], &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-002: \u5206\u9875\u83b7\u53d6\u5546\u54c1]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-002: \u5206\u9875\u83b7\u53d6\u5546\u54c1]&#34;, &#34;duration&#34;: &#34;588 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-002: \u5206\u9875\u83b7\u53d6\u5546\u54c1]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;588 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:07 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts\n2026-08-27 17:09:07 - INFO -    \u53c2\u6570: {&amp;#x27;_page&amp;#x27;: 2, &amp;#x27;_limit&amp;#x27;: 10}\n2026-08-27 17:09:08 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.580s\n2026-08-27 17:09:08 - INFO -    \u54cd\u5e94\u4f53: [{&amp;quot;userId&amp;quot;: 2, &amp;quot;id&amp;quot;: 11, &amp;quot;title&amp;quot;: &amp;quot;et ea vero quia laudantium autem&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;delectus reiciendis molestiae occaecati non minima eveniet qui voluptatibus\\naccusamus in eum beatae sit\\nvel qui neque voluptates ut commodi qui incidunt\\nut animi commodi&amp;quot;}, {&amp;quot;userId&amp;quot;: 2, &amp;quot;id&amp;quot;: 12, &amp;quot;title&amp;quot;: &amp;quot;in quibusdam tempore odit est dolorem&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;itaque id aut magnam\\npraesentium quia et ea odit et ea voluptas et\\nsapiente quia nihil amet occaecati quia id voluptatem\\nincidunt ea est distinctio odio&amp;quot;}, {&amp;quot;u\n2026-08-27 17:09:08 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:09:08 - INFO - \u2705 \u5217\u8868\u957f\u5ea6\u65ad\u8a00\u901a\u8fc7: 10\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts\nINFO     api_test:request_util.py:44    \u53c2\u6570: {&amp;#x27;_page&amp;#x27;: 2, &amp;#x27;_limit&amp;#x27;: 10}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.580s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: [{&amp;quot;userId&amp;quot;: 2, &amp;quot;id&amp;quot;: 11, &amp;quot;title&amp;quot;: &amp;quot;et ea vero quia laudantium autem&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;delectus reiciendis molestiae occaecati non minima eveniet qui voluptatibus\\naccusamus in eum beatae sit\\nvel qui neque voluptates ut commodi qui incidunt\\nut animi commodi&amp;quot;}, {&amp;quot;userId&amp;quot;: 2, &amp;quot;id&amp;quot;: 12, &amp;quot;title&amp;quot;: &amp;quot;in quibusdam tempore odit est dolorem&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;itaque id aut magnam\\npraesentium quia et ea odit et ea voluptas et\\nsapiente quia nihil amet occaecati quia id voluptatem\\nincidunt ea est distinctio odio&amp;quot;}, {&amp;quot;u\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:94 \u2705 \u5217\u8868\u957f\u5ea6\u65ad\u8a00\u901a\u8fc7: 10\n\n&#34;}], &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-003: \u6309\u7528\u6237ID\u7b5b\u9009\u5546\u54c1]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-003: \u6309\u7528\u6237ID\u7b5b\u9009\u5546\u54c1]&#34;, &#34;duration&#34;: &#34;00:00:03&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-003: \u6309\u7528\u6237ID\u7b5b\u9009\u5546\u54c1]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:03&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:08 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts\n2026-08-27 17:09:08 - INFO -    \u53c2\u6570: {&amp;#x27;userId&amp;#x27;: 1}\n2026-08-27 17:09:11 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.290s\n2026-08-27 17:09:11 - INFO -    \u54cd\u5e94\u4f53: [{&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;sunt aut facere repellat provident occaecati excepturi optio reprehenderit&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto&amp;quot;}, {&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 2, &amp;quot;title&amp;quot;: &amp;quot;qui est esse&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;est rerum tempore vitae\\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\\nqu\n2026-08-27 17:09:11 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:09:11 - INFO - \u2705 \u5217\u8868\u975e\u7a7a\u65ad\u8a00\u901a\u8fc7: \u957f\u5ea6=10\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts\nINFO     api_test:request_util.py:44    \u53c2\u6570: {&amp;#x27;userId&amp;#x27;: 1}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.290s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: [{&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;sunt aut facere repellat provident occaecati excepturi optio reprehenderit&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto&amp;quot;}, {&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 2, &amp;quot;title&amp;quot;: &amp;quot;qui est esse&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;est rerum tempore vitae\\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\\nqu\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:109 \u2705 \u5217\u8868\u975e\u7a7a\u65ad\u8a00\u901a\u8fc7: \u957f\u5ea6=10\n\n&#34;}], &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-004: \u6309\u6807\u9898\u641c\u7d22\u5546\u54c1]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-004: \u6309\u6807\u9898\u641c\u7d22\u5546\u54c1]&#34;, &#34;duration&#34;: &#34;492 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-004: \u6309\u6807\u9898\u641c\u7d22\u5546\u54c1]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;492 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:11 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts\n2026-08-27 17:09:11 - INFO -    \u53c2\u6570: {&amp;#x27;q&amp;#x27;: &amp;#x27;sunt&amp;#x27;}\n2026-08-27 17:09:12 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.485s\n2026-08-27 17:09:12 - INFO -    \u54cd\u5e94\u4f53: [{&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;sunt aut facere repellat provident occaecati excepturi optio reprehenderit&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto&amp;quot;}, {&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 4, &amp;quot;title&amp;quot;: &amp;quot;eum et est occaecati&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;ullam et saepe reiciendis voluptatem adipisci\\nsit amet autem assumenda provident rerum culpa\\nquis hic commodi nesciunt rem tenetur doloremque ipsam \n2026-08-27 17:09:12 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts\nINFO     api_test:request_util.py:44    \u53c2\u6570: {&amp;#x27;q&amp;#x27;: &amp;#x27;sunt&amp;#x27;}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.485s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: [{&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;sunt aut facere repellat provident occaecati excepturi optio reprehenderit&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto&amp;quot;}, {&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 4, &amp;quot;title&amp;quot;: &amp;quot;eum et est occaecati&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;ullam et saepe reiciendis voluptatem adipisci\\nsit amet autem assumenda provident rerum culpa\\nquis hic commodi nesciunt rem tenetur doloremque ipsam \nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n\n&#34;}], &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-005: \u6309ID\u6392\u5e8f\u5546\u54c1]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-005: \u6309ID\u6392\u5e8f\u5546\u54c1]&#34;, &#34;duration&#34;: &#34;00:00:01&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-005: \u6309ID\u6392\u5e8f\u5546\u54c1]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:01&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:12 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts\n2026-08-27 17:09:12 - INFO -    \u53c2\u6570: {&amp;#x27;_sort&amp;#x27;: &amp;#x27;id&amp;#x27;, &amp;#x27;_order&amp;#x27;: &amp;#x27;desc&amp;#x27;}\n2026-08-27 17:09:13 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.484s\n2026-08-27 17:09:13 - INFO -    \u54cd\u5e94\u4f53: [{&amp;quot;userId&amp;quot;: 10, &amp;quot;id&amp;quot;: 100, &amp;quot;title&amp;quot;: &amp;quot;at nam consequatur ea labore ea harum&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;cupiditate quo est a modi nesciunt soluta\\nipsa voluptas error itaque dicta in\\nautem qui minus magnam et distinctio eum\\naccusamus ratione error aut&amp;quot;}, {&amp;quot;userId&amp;quot;: 10, &amp;quot;id&amp;quot;: 99, &amp;quot;title&amp;quot;: &amp;quot;temporibus sit alias delectus eligendi possimus magni&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;quo deleniti praesentium dicta non quod\\naut est molestias\\nmolestias et officia quis nihil\\nitaque dolorem quia&amp;quot;}, {&amp;quot;userId&amp;quot;: 10, &amp;quot;id&amp;quot;: 98, &amp;quot;title&amp;quot;: &amp;quot;laboriosam\n2026-08-27 17:09:13 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:09:13 - INFO - \u2705 \u5217\u8868\u975e\u7a7a\u65ad\u8a00\u901a\u8fc7: \u957f\u5ea6=100\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts\nINFO     api_test:request_util.py:44    \u53c2\u6570: {&amp;#x27;_sort&amp;#x27;: &amp;#x27;id&amp;#x27;, &amp;#x27;_order&amp;#x27;: &amp;#x27;desc&amp;#x27;}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.484s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: [{&amp;quot;userId&amp;quot;: 10, &amp;quot;id&amp;quot;: 100, &amp;quot;title&amp;quot;: &amp;quot;at nam consequatur ea labore ea harum&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;cupiditate quo est a modi nesciunt soluta\\nipsa voluptas error itaque dicta in\\nautem qui minus magnam et distinctio eum\\naccusamus ratione error aut&amp;quot;}, {&amp;quot;userId&amp;quot;: 10, &amp;quot;id&amp;quot;: 99, &amp;quot;title&amp;quot;: &amp;quot;temporibus sit alias delectus eligendi possimus magni&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;quo deleniti praesentium dicta non quod\\naut est molestias\\nmolestias et officia quis nihil\\nitaque dolorem quia&amp;quot;}, {&amp;quot;userId&amp;quot;: 10, &amp;quot;id&amp;quot;: 98, &amp;quot;title&amp;quot;: &amp;quot;laboriosam\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:109 \u2705 \u5217\u8868\u975e\u7a7a\u65ad\u8a00\u901a\u8fc7: \u957f\u5ea6=100\n\n&#34;}], &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-006: \u6b63\u5e38\u83b7\u53d6\u5546\u54c1\u8be6\u60c5]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-006: \u6b63\u5e38\u83b7\u53d6\u5546\u54c1\u8be6\u60c5]&#34;, &#34;duration&#34;: &#34;00:00:10&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-006: \u6b63\u5e38\u83b7\u53d6\u5546\u54c1\u8be6\u60c5]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:10&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:13 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts/1\n2026-08-27 17:09:22 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=9.501s\n2026-08-27 17:09:22 - INFO -    \u54cd\u5e94\u4f53: {&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;sunt aut facere repellat provident occaecati excepturi optio reprehenderit&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto&amp;quot;}\n2026-08-27 17:09:22 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:09:22 - INFO - \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;id&amp;#x27;: 1, &amp;#x27;userId&amp;#x27;: 1}\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts/1\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=9.501s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;sunt aut facere repellat provident occaecati excepturi optio reprehenderit&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto&amp;quot;}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:68 \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;id&amp;#x27;: 1, &amp;#x27;userId&amp;#x27;: 1}\n\n&#34;}], &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-007: \u83b7\u53d6\u4e0d\u5b58\u5728\u7684\u5546\u54c1]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-007: \u83b7\u53d6\u4e0d\u5b58\u5728\u7684\u5546\u54c1]&#34;, &#34;duration&#34;: &#34;419 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-007: \u83b7\u53d6\u4e0d\u5b58\u5728\u7684\u5546\u54c1]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;419 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:22 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts/99999\n2026-08-27 17:09:23 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=404, \u8017\u65f6=0.394s\n2026-08-27 17:09:23 - INFO -    \u54cd\u5e94\u4f53: {}\n2026-08-27 17:09:23 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 404 == 404\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts/99999\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=404, \u8017\u65f6=0.394s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 404 == 404\n\n&#34;}], &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-008: \u6b63\u5e38\u521b\u5efa\u5546\u54c1]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-008: \u6b63\u5e38\u521b\u5efa\u5546\u54c1]&#34;, &#34;duration&#34;: &#34;474 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-008: \u6b63\u5e38\u521b\u5efa\u5546\u54c1]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;474 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:23 - INFO - \ud83d\udce4 \u8bf7\u6c42: POST https://jsonplaceholder.typicode.com/posts\n2026-08-27 17:09:23 - INFO -    \u8bf7\u6c42\u4f53: {&amp;quot;title&amp;quot;: &amp;quot;\u6d4b\u8bd5\u5546\u54c1&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;\u8fd9\u662f\u4e00\u4e2a\u6d4b\u8bd5\u5546\u54c1\u7684\u63cf\u8ff0&amp;quot;, &amp;quot;userId&amp;quot;: 1}\n2026-08-27 17:09:23 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=201, \u8017\u65f6=0.465s\n2026-08-27 17:09:23 - INFO -    \u54cd\u5e94\u4f53: {&amp;quot;title&amp;quot;: &amp;quot;\u6d4b\u8bd5\u5546\u54c1&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;\u8fd9\u662f\u4e00\u4e2a\u6d4b\u8bd5\u5546\u54c1\u7684\u63cf\u8ff0&amp;quot;, &amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 101}\n2026-08-27 17:09:23 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 201 == 201\n2026-08-27 17:09:23 - INFO - \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;title&amp;#x27;: &amp;#x27;\u6d4b\u8bd5\u5546\u54c1&amp;#x27;, &amp;#x27;body&amp;#x27;: &amp;#x27;\u8fd9\u662f\u4e00\u4e2a\u6d4b\u8bd5\u5546\u54c1\u7684\u63cf\u8ff0&amp;#x27;, &amp;#x27;userId&amp;#x27;: 1}\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: POST https://jsonplaceholder.typicode.com/posts\nINFO     api_test:request_util.py:46    \u8bf7\u6c42\u4f53: {&amp;quot;title&amp;quot;: &amp;quot;\u6d4b\u8bd5\u5546\u54c1&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;\u8fd9\u662f\u4e00\u4e2a\u6d4b\u8bd5\u5546\u54c1\u7684\u63cf\u8ff0&amp;quot;, &amp;quot;userId&amp;quot;: 1}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=201, \u8017\u65f6=0.465s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {&amp;quot;title&amp;quot;: &amp;quot;\u6d4b\u8bd5\u5546\u54c1&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;\u8fd9\u662f\u4e00\u4e2a\u6d4b\u8bd5\u5546\u54c1\u7684\u63cf\u8ff0&amp;quot;, &amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 101}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 201 == 201\nINFO     api_test:assert_util.py:68 \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;title&amp;#x27;: &amp;#x27;\u6d4b\u8bd5\u5546\u54c1&amp;#x27;, &amp;#x27;body&amp;#x27;: &amp;#x27;\u8fd9\u662f\u4e00\u4e2a\u6d4b\u8bd5\u5546\u54c1\u7684\u63cf\u8ff0&amp;#x27;, &amp;#x27;userId&amp;#x27;: 1}\n\n&#34;}], &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-009: \u521b\u5efa\u5546\u54c1\u7f3a\u5c11title]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-009: \u521b\u5efa\u5546\u54c1\u7f3a\u5c11title]&#34;, &#34;duration&#34;: &#34;00:00:05&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-009: \u521b\u5efa\u5546\u54c1\u7f3a\u5c11title]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:05&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:23 - INFO - \ud83d\udce4 \u8bf7\u6c42: POST https://jsonplaceholder.typicode.com/posts\n2026-08-27 17:09:23 - INFO -    \u8bf7\u6c42\u4f53: {&amp;quot;body&amp;quot;: &amp;quot;\u53ea\u6709\u63cf\u8ff0\u6ca1\u6709\u6807\u9898&amp;quot;, &amp;quot;userId&amp;quot;: 1}\n2026-08-27 17:09:28 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=201, \u8017\u65f6=4.996s\n2026-08-27 17:09:28 - INFO -    \u54cd\u5e94\u4f53: {&amp;quot;body&amp;quot;: &amp;quot;\u53ea\u6709\u63cf\u8ff0\u6ca1\u6709\u6807\u9898&amp;quot;, &amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 101}\n2026-08-27 17:09:28 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 201 == [201, 400]\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: POST https://jsonplaceholder.typicode.com/posts\nINFO     api_test:request_util.py:46    \u8bf7\u6c42\u4f53: {&amp;quot;body&amp;quot;: &amp;quot;\u53ea\u6709\u63cf\u8ff0\u6ca1\u6709\u6807\u9898&amp;quot;, &amp;quot;userId&amp;quot;: 1}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=201, \u8017\u65f6=4.996s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {&amp;quot;body&amp;quot;: &amp;quot;\u53ea\u6709\u63cf\u8ff0\u6ca1\u6709\u6807\u9898&amp;quot;, &amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 101}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 201 == [201, 400]\n\n&#34;}], &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-010: \u521b\u5efa\u5546\u54c1title\u4e3a\u7a7a]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-010: \u521b\u5efa\u5546\u54c1title\u4e3a\u7a7a]&#34;, &#34;duration&#34;: &#34;457 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-010: \u521b\u5efa\u5546\u54c1title\u4e3a\u7a7a]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;457 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:28 - INFO - \ud83d\udce4 \u8bf7\u6c42: POST https://jsonplaceholder.typicode.com/posts\n2026-08-27 17:09:28 - INFO -    \u8bf7\u6c42\u4f53: {&amp;quot;title&amp;quot;: &amp;quot;&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;\u6d4b\u8bd5&amp;quot;, &amp;quot;userId&amp;quot;: 1}\n2026-08-27 17:09:29 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=201, \u8017\u65f6=0.448s\n2026-08-27 17:09:29 - INFO -    \u54cd\u5e94\u4f53: {&amp;quot;title&amp;quot;: &amp;quot;&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;\u6d4b\u8bd5&amp;quot;, &amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 101}\n2026-08-27 17:09:29 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 201 == [201, 400]\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: POST https://jsonplaceholder.typicode.com/posts\nINFO     api_test:request_util.py:46    \u8bf7\u6c42\u4f53: {&amp;quot;title&amp;quot;: &amp;quot;&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;\u6d4b\u8bd5&amp;quot;, &amp;quot;userId&amp;quot;: 1}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=201, \u8017\u65f6=0.448s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {&amp;quot;title&amp;quot;: &amp;quot;&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;\u6d4b\u8bd5&amp;quot;, &amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 101}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 201 == [201, 400]\n\n&#34;}], &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-011: \u6b63\u5e38\u66f4\u65b0\u5546\u54c1]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-011: \u6b63\u5e38\u66f4\u65b0\u5546\u54c1]&#34;, &#34;duration&#34;: &#34;00:00:05&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-011: \u6b63\u5e38\u66f4\u65b0\u5546\u54c1]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:05&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:29 - INFO - \ud83d\udce4 \u8bf7\u6c42: PUT https://jsonplaceholder.typicode.com/posts/1\n2026-08-27 17:09:29 - INFO -    \u8bf7\u6c42\u4f53: {&amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;\u66f4\u65b0\u540e\u7684\u5546\u54c1\u6807\u9898&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;\u66f4\u65b0\u540e\u7684\u63cf\u8ff0&amp;quot;, &amp;quot;userId&amp;quot;: 1}\n2026-08-27 17:09:33 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.492s\n2026-08-27 17:09:33 - INFO -    \u54cd\u5e94\u4f53: {&amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;\u66f4\u65b0\u540e\u7684\u5546\u54c1\u6807\u9898&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;\u66f4\u65b0\u540e\u7684\u63cf\u8ff0&amp;quot;, &amp;quot;userId&amp;quot;: 1}\n2026-08-27 17:09:33 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:09:33 - INFO - \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;title&amp;#x27;: &amp;#x27;\u66f4\u65b0\u540e\u7684\u5546\u54c1\u6807\u9898&amp;#x27;}\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: PUT https://jsonplaceholder.typicode.com/posts/1\nINFO     api_test:request_util.py:46    \u8bf7\u6c42\u4f53: {&amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;\u66f4\u65b0\u540e\u7684\u5546\u54c1\u6807\u9898&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;\u66f4\u65b0\u540e\u7684\u63cf\u8ff0&amp;quot;, &amp;quot;userId&amp;quot;: 1}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.492s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {&amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;\u66f4\u65b0\u540e\u7684\u5546\u54c1\u6807\u9898&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;\u66f4\u65b0\u540e\u7684\u63cf\u8ff0&amp;quot;, &amp;quot;userId&amp;quot;: 1}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:68 \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;title&amp;#x27;: &amp;#x27;\u66f4\u65b0\u540e\u7684\u5546\u54c1\u6807\u9898&amp;#x27;}\n\n&#34;}], &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-012: \u90e8\u5206\u66f4\u65b0\u5546\u54c1]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-012: \u90e8\u5206\u66f4\u65b0\u5546\u54c1]&#34;, &#34;duration&#34;: &#34;00:00:04&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-012: \u90e8\u5206\u66f4\u65b0\u5546\u54c1]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:04&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:33 - INFO - \ud83d\udce4 \u8bf7\u6c42: PATCH https://jsonplaceholder.typicode.com/posts/1\n2026-08-27 17:09:33 - INFO -    \u8bf7\u6c42\u4f53: {&amp;quot;title&amp;quot;: &amp;quot;\u90e8\u5206\u66f4\u65b0\u6807\u9898&amp;quot;}\n2026-08-27 17:09:38 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.550s\n2026-08-27 17:09:38 - INFO -    \u54cd\u5e94\u4f53: {&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;\u90e8\u5206\u66f4\u65b0\u6807\u9898&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto&amp;quot;}\n2026-08-27 17:09:38 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:09:38 - INFO - \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;title&amp;#x27;: &amp;#x27;\u90e8\u5206\u66f4\u65b0\u6807\u9898&amp;#x27;}\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: PATCH https://jsonplaceholder.typicode.com/posts/1\nINFO     api_test:request_util.py:46    \u8bf7\u6c42\u4f53: {&amp;quot;title&amp;quot;: &amp;quot;\u90e8\u5206\u66f4\u65b0\u6807\u9898&amp;quot;}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.550s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;\u90e8\u5206\u66f4\u65b0\u6807\u9898&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto&amp;quot;}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:68 \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;title&amp;#x27;: &amp;#x27;\u90e8\u5206\u66f4\u65b0\u6807\u9898&amp;#x27;}\n\n&#34;}], &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-013: \u6b63\u5e38\u5220\u9664\u5546\u54c1]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-013: \u6b63\u5e38\u5220\u9664\u5546\u54c1]&#34;, &#34;duration&#34;: &#34;886 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-013: \u6b63\u5e38\u5220\u9664\u5546\u54c1]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;886 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:38 - INFO - \ud83d\udce4 \u8bf7\u6c42: DELETE https://jsonplaceholder.typicode.com/posts/1\n2026-08-27 17:09:39 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.865s\n2026-08-27 17:09:39 - INFO -    \u54cd\u5e94\u4f53: {}\n2026-08-27 17:09:39 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: DELETE https://jsonplaceholder.typicode.com/posts/1\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.865s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n\n&#34;}], &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-014: \u83b7\u53d6\u5546\u54c1\u7684\u8bc4\u8bba]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-014: \u83b7\u53d6\u5546\u54c1\u7684\u8bc4\u8bba]&#34;, &#34;duration&#34;: &#34;00:00:02&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-014: \u83b7\u53d6\u5546\u54c1\u7684\u8bc4\u8bba]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:02&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:39 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts/1/comments\n2026-08-27 17:09:40 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.542s\n2026-08-27 17:09:40 - INFO -    \u54cd\u5e94\u4f53: [{&amp;quot;postId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;id labore ex et quam laborum&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Eliseo@gardner.biz&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;laudantium enim quasi est quidem magnam voluptate ipsam eos\\ntempora quo necessitatibus\\ndolor quam autem quasi\\nreiciendis et nam sapiente accusantium&amp;quot;}, {&amp;quot;postId&amp;quot;: 1, &amp;quot;id&amp;quot;: 2, &amp;quot;name&amp;quot;: &amp;quot;quo vero reiciendis velit similique earum&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Jayne_Kuhic@sydney.com&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;est natus enim nihil est dolore omnis voluptatem numquam\\net omnis occaecati quod ullam at\\nvoluptatem error expedita par\n2026-08-27 17:09:40 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:09:40 - INFO - \u2705 \u5217\u8868\u975e\u7a7a\u65ad\u8a00\u901a\u8fc7: \u957f\u5ea6=5\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts/1/comments\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.542s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: [{&amp;quot;postId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;id labore ex et quam laborum&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Eliseo@gardner.biz&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;laudantium enim quasi est quidem magnam voluptate ipsam eos\\ntempora quo necessitatibus\\ndolor quam autem quasi\\nreiciendis et nam sapiente accusantium&amp;quot;}, {&amp;quot;postId&amp;quot;: 1, &amp;quot;id&amp;quot;: 2, &amp;quot;name&amp;quot;: &amp;quot;quo vero reiciendis velit similique earum&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Jayne_Kuhic@sydney.com&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;est natus enim nihil est dolore omnis voluptatem numquam\\net omnis occaecati quod ullam at\\nvoluptatem error expedita par\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:109 \u2705 \u5217\u8868\u975e\u7a7a\u65ad\u8a00\u901a\u8fc7: \u957f\u5ea6=5\n\n&#34;}], &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-015: \u83b7\u53d6\u5546\u54c1\u8bc4\u8bba\u6570\u91cf]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-015: \u83b7\u53d6\u5546\u54c1\u8bc4\u8bba\u6570\u91cf]&#34;, &#34;duration&#34;: &#34;00:00:01&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-015: \u83b7\u53d6\u5546\u54c1\u8bc4\u8bba\u6570\u91cf]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:01&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:40 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts/1/comments\n2026-08-27 17:09:42 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.574s\n2026-08-27 17:09:42 - INFO -    \u54cd\u5e94\u4f53: [{&amp;quot;postId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;id labore ex et quam laborum&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Eliseo@gardner.biz&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;laudantium enim quasi est quidem magnam voluptate ipsam eos\\ntempora quo necessitatibus\\ndolor quam autem quasi\\nreiciendis et nam sapiente accusantium&amp;quot;}, {&amp;quot;postId&amp;quot;: 1, &amp;quot;id&amp;quot;: 2, &amp;quot;name&amp;quot;: &amp;quot;quo vero reiciendis velit similique earum&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Jayne_Kuhic@sydney.com&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;est natus enim nihil est dolore omnis voluptatem numquam\\net omnis occaecati quod ullam at\\nvoluptatem error expedita par\n2026-08-27 17:09:42 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:09:42 - INFO - \u2705 \u5217\u8868\u957f\u5ea6\u65ad\u8a00\u901a\u8fc7: 5\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts/1/comments\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.574s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: [{&amp;quot;postId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;id labore ex et quam laborum&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Eliseo@gardner.biz&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;laudantium enim quasi est quidem magnam voluptate ipsam eos\\ntempora quo necessitatibus\\ndolor quam autem quasi\\nreiciendis et nam sapiente accusantium&amp;quot;}, {&amp;quot;postId&amp;quot;: 1, &amp;quot;id&amp;quot;: 2, &amp;quot;name&amp;quot;: &amp;quot;quo vero reiciendis velit similique earum&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Jayne_Kuhic@sydney.com&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;est natus enim nihil est dolore omnis voluptatem numquam\\net omnis occaecati quod ullam at\\nvoluptatem error expedita par\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:94 \u2705 \u5217\u8868\u957f\u5ea6\u65ad\u8a00\u901a\u8fc7: 5\n\n&#34;}], &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-016: \u5546\u54c1\u5217\u8868\u54cd\u5e94\u65f6\u95f4]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-016: \u5546\u54c1\u5217\u8868\u54cd\u5e94\u65f6\u95f4]&#34;, &#34;duration&#34;: &#34;00:00:02&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_product_api.py::TestProductApi::test_product_api[TC-PROD-016: \u5546\u54c1\u5217\u8868\u54cd\u5e94\u65f6\u95f4]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:02&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:42 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts\n2026-08-27 17:09:42 - INFO -    \u53c2\u6570: {&amp;#x27;_limit&amp;#x27;: 20}\n2026-08-27 17:09:43 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.168s\n2026-08-27 17:09:43 - INFO -    \u54cd\u5e94\u4f53: [{&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;sunt aut facere repellat provident occaecati excepturi optio reprehenderit&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto&amp;quot;}, {&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 2, &amp;quot;title&amp;quot;: &amp;quot;qui est esse&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;est rerum tempore vitae\\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\\nqu\n2026-08-27 17:09:43 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:09:43 - INFO - \u2705 \u54cd\u5e94\u65f6\u95f4\u65ad\u8a00\u901a\u8fc7: 1.168s &amp;lt;= 3s\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/posts\nINFO     api_test:request_util.py:44    \u53c2\u6570: {&amp;#x27;_limit&amp;#x27;: 20}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.168s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: [{&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 1, &amp;quot;title&amp;quot;: &amp;quot;sunt aut facere repellat provident occaecati excepturi optio reprehenderit&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;quia et suscipit\\nsuscipit recusandae consequuntur expedita et cum\\nreprehenderit molestiae ut ut quas totam\\nnostrum rerum est autem sunt rem eveniet architecto&amp;quot;}, {&amp;quot;userId&amp;quot;: 1, &amp;quot;id&amp;quot;: 2, &amp;quot;title&amp;quot;: &amp;quot;qui est esse&amp;quot;, &amp;quot;body&amp;quot;: &amp;quot;est rerum tempore vitae\\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\\nqu\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:78 \u2705 \u54cd\u5e94\u65f6\u95f4\u65ad\u8a00\u901a\u8fc7: 1.168s &amp;lt;= 3s\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-001: \u6b63\u5e38\u83b7\u53d6\u7528\u6237\u5217\u8868]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-001: \u6b63\u5e38\u83b7\u53d6\u7528\u6237\u5217\u8868]&#34;, &#34;duration&#34;: &#34;00:00:01&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-001: \u6b63\u5e38\u83b7\u53d6\u7528\u6237\u5217\u8868]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:01&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:43 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users\n2026-08-27 17:09:44 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.056s\n2026-08-27 17:09:44 - INFO -    \u54cd\u5e94\u4f53: [{&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Leanne Graham&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Bret&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Sincere@april.biz&amp;quot;, &amp;quot;address&amp;quot;: {&amp;quot;street&amp;quot;: &amp;quot;Kulas Light&amp;quot;, &amp;quot;suite&amp;quot;: &amp;quot;Apt. 556&amp;quot;, &amp;quot;city&amp;quot;: &amp;quot;Gwenborough&amp;quot;, &amp;quot;zipcode&amp;quot;: &amp;quot;92998-3874&amp;quot;, &amp;quot;geo&amp;quot;: {&amp;quot;lat&amp;quot;: &amp;quot;-37.3159&amp;quot;, &amp;quot;lng&amp;quot;: &amp;quot;81.1496&amp;quot;}}, &amp;quot;phone&amp;quot;: &amp;quot;1-770-736-8031 x56442&amp;quot;, &amp;quot;website&amp;quot;: &amp;quot;hildegard.org&amp;quot;, &amp;quot;company&amp;quot;: {&amp;quot;name&amp;quot;: &amp;quot;Romaguera-Crona&amp;quot;, &amp;quot;catchPhrase&amp;quot;: &amp;quot;Multi-layered client-server neural-net&amp;quot;, &amp;quot;bs&amp;quot;: &amp;quot;harness real-time e-markets&amp;quot;}}, {&amp;quot;id&amp;quot;: 2, &amp;quot;name&amp;quot;: &amp;quot;Ervin Howell&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Antonette&amp;quot;, &amp;quot;emai\n2026-08-27 17:09:44 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:09:44 - INFO - \u2705 \u54cd\u5e94\u65f6\u95f4\u65ad\u8a00\u901a\u8fc7: 1.056s &amp;lt;= 3s\n2026-08-27 17:09:44 - INFO - \u2705 \u5217\u8868\u975e\u7a7a\u65ad\u8a00\u901a\u8fc7: \u957f\u5ea6=10\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.056s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: [{&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Leanne Graham&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Bret&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Sincere@april.biz&amp;quot;, &amp;quot;address&amp;quot;: {&amp;quot;street&amp;quot;: &amp;quot;Kulas Light&amp;quot;, &amp;quot;suite&amp;quot;: &amp;quot;Apt. 556&amp;quot;, &amp;quot;city&amp;quot;: &amp;quot;Gwenborough&amp;quot;, &amp;quot;zipcode&amp;quot;: &amp;quot;92998-3874&amp;quot;, &amp;quot;geo&amp;quot;: {&amp;quot;lat&amp;quot;: &amp;quot;-37.3159&amp;quot;, &amp;quot;lng&amp;quot;: &amp;quot;81.1496&amp;quot;}}, &amp;quot;phone&amp;quot;: &amp;quot;1-770-736-8031 x56442&amp;quot;, &amp;quot;website&amp;quot;: &amp;quot;hildegard.org&amp;quot;, &amp;quot;company&amp;quot;: {&amp;quot;name&amp;quot;: &amp;quot;Romaguera-Crona&amp;quot;, &amp;quot;catchPhrase&amp;quot;: &amp;quot;Multi-layered client-server neural-net&amp;quot;, &amp;quot;bs&amp;quot;: &amp;quot;harness real-time e-markets&amp;quot;}}, {&amp;quot;id&amp;quot;: 2, &amp;quot;name&amp;quot;: &amp;quot;Ervin Howell&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Antonette&amp;quot;, &amp;quot;emai\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:78 \u2705 \u54cd\u5e94\u65f6\u95f4\u65ad\u8a00\u901a\u8fc7: 1.056s &amp;lt;= 3s\nINFO     api_test:assert_util.py:109 \u2705 \u5217\u8868\u975e\u7a7a\u65ad\u8a00\u901a\u8fc7: \u957f\u5ea6=10\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-002: \u5206\u9875\u83b7\u53d6\u7528\u6237\u5217\u8868]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-002: \u5206\u9875\u83b7\u53d6\u7528\u6237\u5217\u8868]&#34;, &#34;duration&#34;: &#34;00:00:01&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-002: \u5206\u9875\u83b7\u53d6\u7528\u6237\u5217\u8868]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:01&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:45 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users\n2026-08-27 17:09:45 - INFO -    \u53c2\u6570: {&amp;#x27;_page&amp;#x27;: 1, &amp;#x27;_limit&amp;#x27;: 5}\n2026-08-27 17:09:46 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.640s\n2026-08-27 17:09:46 - INFO -    \u54cd\u5e94\u4f53: [{&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Leanne Graham&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Bret&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Sincere@april.biz&amp;quot;, &amp;quot;address&amp;quot;: {&amp;quot;street&amp;quot;: &amp;quot;Kulas Light&amp;quot;, &amp;quot;suite&amp;quot;: &amp;quot;Apt. 556&amp;quot;, &amp;quot;city&amp;quot;: &amp;quot;Gwenborough&amp;quot;, &amp;quot;zipcode&amp;quot;: &amp;quot;92998-3874&amp;quot;, &amp;quot;geo&amp;quot;: {&amp;quot;lat&amp;quot;: &amp;quot;-37.3159&amp;quot;, &amp;quot;lng&amp;quot;: &amp;quot;81.1496&amp;quot;}}, &amp;quot;phone&amp;quot;: &amp;quot;1-770-736-8031 x56442&amp;quot;, &amp;quot;website&amp;quot;: &amp;quot;hildegard.org&amp;quot;, &amp;quot;company&amp;quot;: {&amp;quot;name&amp;quot;: &amp;quot;Romaguera-Crona&amp;quot;, &amp;quot;catchPhrase&amp;quot;: &amp;quot;Multi-layered client-server neural-net&amp;quot;, &amp;quot;bs&amp;quot;: &amp;quot;harness real-time e-markets&amp;quot;}}, {&amp;quot;id&amp;quot;: 2, &amp;quot;name&amp;quot;: &amp;quot;Ervin Howell&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Antonette&amp;quot;, &amp;quot;emai\n2026-08-27 17:09:46 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:09:46 - INFO - \u2705 \u5217\u8868\u957f\u5ea6\u65ad\u8a00\u901a\u8fc7: 5\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users\nINFO     api_test:request_util.py:44    \u53c2\u6570: {&amp;#x27;_page&amp;#x27;: 1, &amp;#x27;_limit&amp;#x27;: 5}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.640s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: [{&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Leanne Graham&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Bret&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Sincere@april.biz&amp;quot;, &amp;quot;address&amp;quot;: {&amp;quot;street&amp;quot;: &amp;quot;Kulas Light&amp;quot;, &amp;quot;suite&amp;quot;: &amp;quot;Apt. 556&amp;quot;, &amp;quot;city&amp;quot;: &amp;quot;Gwenborough&amp;quot;, &amp;quot;zipcode&amp;quot;: &amp;quot;92998-3874&amp;quot;, &amp;quot;geo&amp;quot;: {&amp;quot;lat&amp;quot;: &amp;quot;-37.3159&amp;quot;, &amp;quot;lng&amp;quot;: &amp;quot;81.1496&amp;quot;}}, &amp;quot;phone&amp;quot;: &amp;quot;1-770-736-8031 x56442&amp;quot;, &amp;quot;website&amp;quot;: &amp;quot;hildegard.org&amp;quot;, &amp;quot;company&amp;quot;: {&amp;quot;name&amp;quot;: &amp;quot;Romaguera-Crona&amp;quot;, &amp;quot;catchPhrase&amp;quot;: &amp;quot;Multi-layered client-server neural-net&amp;quot;, &amp;quot;bs&amp;quot;: &amp;quot;harness real-time e-markets&amp;quot;}}, {&amp;quot;id&amp;quot;: 2, &amp;quot;name&amp;quot;: &amp;quot;Ervin Howell&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Antonette&amp;quot;, &amp;quot;emai\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:94 \u2705 \u5217\u8868\u957f\u5ea6\u65ad\u8a00\u901a\u8fc7: 5\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-003: \u83b7\u53d6\u7528\u6237\u5217\u8868_page\u4e3a0]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-003: \u83b7\u53d6\u7528\u6237\u5217\u8868_page\u4e3a0]&#34;, &#34;duration&#34;: &#34;00:00:01&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-003: \u83b7\u53d6\u7528\u6237\u5217\u8868_page\u4e3a0]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:01&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:46 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users\n2026-08-27 17:09:46 - INFO -    \u53c2\u6570: {&amp;#x27;_page&amp;#x27;: 0}\n2026-08-27 17:09:47 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.190s\n2026-08-27 17:09:47 - INFO -    \u54cd\u5e94\u4f53: [{&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Leanne Graham&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Bret&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Sincere@april.biz&amp;quot;, &amp;quot;address&amp;quot;: {&amp;quot;street&amp;quot;: &amp;quot;Kulas Light&amp;quot;, &amp;quot;suite&amp;quot;: &amp;quot;Apt. 556&amp;quot;, &amp;quot;city&amp;quot;: &amp;quot;Gwenborough&amp;quot;, &amp;quot;zipcode&amp;quot;: &amp;quot;92998-3874&amp;quot;, &amp;quot;geo&amp;quot;: {&amp;quot;lat&amp;quot;: &amp;quot;-37.3159&amp;quot;, &amp;quot;lng&amp;quot;: &amp;quot;81.1496&amp;quot;}}, &amp;quot;phone&amp;quot;: &amp;quot;1-770-736-8031 x56442&amp;quot;, &amp;quot;website&amp;quot;: &amp;quot;hildegard.org&amp;quot;, &amp;quot;company&amp;quot;: {&amp;quot;name&amp;quot;: &amp;quot;Romaguera-Crona&amp;quot;, &amp;quot;catchPhrase&amp;quot;: &amp;quot;Multi-layered client-server neural-net&amp;quot;, &amp;quot;bs&amp;quot;: &amp;quot;harness real-time e-markets&amp;quot;}}, {&amp;quot;id&amp;quot;: 2, &amp;quot;name&amp;quot;: &amp;quot;Ervin Howell&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Antonette&amp;quot;, &amp;quot;emai\n2026-08-27 17:09:47 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users\nINFO     api_test:request_util.py:44    \u53c2\u6570: {&amp;#x27;_page&amp;#x27;: 0}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.190s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: [{&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Leanne Graham&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Bret&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Sincere@april.biz&amp;quot;, &amp;quot;address&amp;quot;: {&amp;quot;street&amp;quot;: &amp;quot;Kulas Light&amp;quot;, &amp;quot;suite&amp;quot;: &amp;quot;Apt. 556&amp;quot;, &amp;quot;city&amp;quot;: &amp;quot;Gwenborough&amp;quot;, &amp;quot;zipcode&amp;quot;: &amp;quot;92998-3874&amp;quot;, &amp;quot;geo&amp;quot;: {&amp;quot;lat&amp;quot;: &amp;quot;-37.3159&amp;quot;, &amp;quot;lng&amp;quot;: &amp;quot;81.1496&amp;quot;}}, &amp;quot;phone&amp;quot;: &amp;quot;1-770-736-8031 x56442&amp;quot;, &amp;quot;website&amp;quot;: &amp;quot;hildegard.org&amp;quot;, &amp;quot;company&amp;quot;: {&amp;quot;name&amp;quot;: &amp;quot;Romaguera-Crona&amp;quot;, &amp;quot;catchPhrase&amp;quot;: &amp;quot;Multi-layered client-server neural-net&amp;quot;, &amp;quot;bs&amp;quot;: &amp;quot;harness real-time e-markets&amp;quot;}}, {&amp;quot;id&amp;quot;: 2, &amp;quot;name&amp;quot;: &amp;quot;Ervin Howell&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Antonette&amp;quot;, &amp;quot;emai\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-004: \u6b63\u5e38\u83b7\u53d6\u7528\u6237\u8be6\u60c5]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-004: \u6b63\u5e38\u83b7\u53d6\u7528\u6237\u8be6\u60c5]&#34;, &#34;duration&#34;: &#34;00:00:02&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-004: \u6b63\u5e38\u83b7\u53d6\u7528\u6237\u8be6\u60c5]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:02&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:47 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users/1\n2026-08-27 17:09:48 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.563s\n2026-08-27 17:09:48 - INFO -    \u54cd\u5e94\u4f53: {&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Leanne Graham&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Bret&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Sincere@april.biz&amp;quot;, &amp;quot;address&amp;quot;: {&amp;quot;street&amp;quot;: &amp;quot;Kulas Light&amp;quot;, &amp;quot;suite&amp;quot;: &amp;quot;Apt. 556&amp;quot;, &amp;quot;city&amp;quot;: &amp;quot;Gwenborough&amp;quot;, &amp;quot;zipcode&amp;quot;: &amp;quot;92998-3874&amp;quot;, &amp;quot;geo&amp;quot;: {&amp;quot;lat&amp;quot;: &amp;quot;-37.3159&amp;quot;, &amp;quot;lng&amp;quot;: &amp;quot;81.1496&amp;quot;}}, &amp;quot;phone&amp;quot;: &amp;quot;1-770-736-8031 x56442&amp;quot;, &amp;quot;website&amp;quot;: &amp;quot;hildegard.org&amp;quot;, &amp;quot;company&amp;quot;: {&amp;quot;name&amp;quot;: &amp;quot;Romaguera-Crona&amp;quot;, &amp;quot;catchPhrase&amp;quot;: &amp;quot;Multi-layered client-server neural-net&amp;quot;, &amp;quot;bs&amp;quot;: &amp;quot;harness real-time e-markets&amp;quot;}}\n2026-08-27 17:09:48 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:09:48 - INFO - \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;id&amp;#x27;: 1, &amp;#x27;name&amp;#x27;: &amp;#x27;Leanne Graham&amp;#x27;}\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users/1\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.563s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Leanne Graham&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Bret&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Sincere@april.biz&amp;quot;, &amp;quot;address&amp;quot;: {&amp;quot;street&amp;quot;: &amp;quot;Kulas Light&amp;quot;, &amp;quot;suite&amp;quot;: &amp;quot;Apt. 556&amp;quot;, &amp;quot;city&amp;quot;: &amp;quot;Gwenborough&amp;quot;, &amp;quot;zipcode&amp;quot;: &amp;quot;92998-3874&amp;quot;, &amp;quot;geo&amp;quot;: {&amp;quot;lat&amp;quot;: &amp;quot;-37.3159&amp;quot;, &amp;quot;lng&amp;quot;: &amp;quot;81.1496&amp;quot;}}, &amp;quot;phone&amp;quot;: &amp;quot;1-770-736-8031 x56442&amp;quot;, &amp;quot;website&amp;quot;: &amp;quot;hildegard.org&amp;quot;, &amp;quot;company&amp;quot;: {&amp;quot;name&amp;quot;: &amp;quot;Romaguera-Crona&amp;quot;, &amp;quot;catchPhrase&amp;quot;: &amp;quot;Multi-layered client-server neural-net&amp;quot;, &amp;quot;bs&amp;quot;: &amp;quot;harness real-time e-markets&amp;quot;}}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:68 \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;id&amp;#x27;: 1, &amp;#x27;name&amp;#x27;: &amp;#x27;Leanne Graham&amp;#x27;}\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-005: \u83b7\u53d6\u4e0d\u5b58\u5728\u7684\u7528\u6237]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-005: \u83b7\u53d6\u4e0d\u5b58\u5728\u7684\u7528\u6237]&#34;, &#34;duration&#34;: &#34;00:00:02&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-005: \u83b7\u53d6\u4e0d\u5b58\u5728\u7684\u7528\u6237]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:02&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:48 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users/9999\n2026-08-27 17:09:50 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=404, \u8017\u65f6=1.730s\n2026-08-27 17:09:50 - INFO -    \u54cd\u5e94\u4f53: {}\n2026-08-27 17:09:50 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 404 == 404\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users/9999\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=404, \u8017\u65f6=1.730s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 404 == 404\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-006: \u7528\u6237ID\u4e3a\u975e\u6570\u5b57]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-006: \u7528\u6237ID\u4e3a\u975e\u6570\u5b57]&#34;, &#34;duration&#34;: &#34;00:00:01&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-006: \u7528\u6237ID\u4e3a\u975e\u6570\u5b57]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:01&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:50 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users/abc\n2026-08-27 17:09:52 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=404, \u8017\u65f6=1.389s\n2026-08-27 17:09:52 - INFO -    \u54cd\u5e94\u4f53: {}\n2026-08-27 17:09:52 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 404 == [404, 500]\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users/abc\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=404, \u8017\u65f6=1.389s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 404 == [404, 500]\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-007: \u6b63\u5e38\u521b\u5efa\u7528\u6237]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-007: \u6b63\u5e38\u521b\u5efa\u7528\u6237]&#34;, &#34;duration&#34;: &#34;779 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-007: \u6b63\u5e38\u521b\u5efa\u7528\u6237]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;779 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:52 - INFO - \ud83d\udce4 \u8bf7\u6c42: POST https://jsonplaceholder.typicode.com/users\n2026-08-27 17:09:52 - INFO -    \u8bf7\u6c42\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;Test User&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;testuser&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;test@example.com&amp;quot;, &amp;quot;phone&amp;quot;: &amp;quot;123-456-7890&amp;quot;}\n2026-08-27 17:09:52 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=201, \u8017\u65f6=0.755s\n2026-08-27 17:09:52 - INFO -    \u54cd\u5e94\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;Test User&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;testuser&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;test@example.com&amp;quot;, &amp;quot;phone&amp;quot;: &amp;quot;123-456-7890&amp;quot;, &amp;quot;id&amp;quot;: 11}\n2026-08-27 17:09:52 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 201 == 201\n2026-08-27 17:09:52 - INFO - \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;name&amp;#x27;: &amp;#x27;Test User&amp;#x27;, &amp;#x27;username&amp;#x27;: &amp;#x27;testuser&amp;#x27;, &amp;#x27;email&amp;#x27;: &amp;#x27;test@example.com&amp;#x27;}\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: POST https://jsonplaceholder.typicode.com/users\nINFO     api_test:request_util.py:46    \u8bf7\u6c42\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;Test User&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;testuser&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;test@example.com&amp;quot;, &amp;quot;phone&amp;quot;: &amp;quot;123-456-7890&amp;quot;}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=201, \u8017\u65f6=0.755s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;Test User&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;testuser&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;test@example.com&amp;quot;, &amp;quot;phone&amp;quot;: &amp;quot;123-456-7890&amp;quot;, &amp;quot;id&amp;quot;: 11}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 201 == 201\nINFO     api_test:assert_util.py:68 \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;name&amp;#x27;: &amp;#x27;Test User&amp;#x27;, &amp;#x27;username&amp;#x27;: &amp;#x27;testuser&amp;#x27;, &amp;#x27;email&amp;#x27;: &amp;#x27;test@example.com&amp;#x27;}\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-008: \u521b\u5efa\u7528\u6237\u7f3a\u5c11\u5fc5\u586b\u5b57\u6bb5name]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-008: \u521b\u5efa\u7528\u6237\u7f3a\u5c11\u5fc5\u586b\u5b57\u6bb5name]&#34;, &#34;duration&#34;: &#34;799 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-008: \u521b\u5efa\u7528\u6237\u7f3a\u5c11\u5fc5\u586b\u5b57\u6bb5name]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;799 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:52 - INFO - \ud83d\udce4 \u8bf7\u6c42: POST https://jsonplaceholder.typicode.com/users\n2026-08-27 17:09:52 - INFO -    \u8bf7\u6c42\u4f53: {&amp;quot;username&amp;quot;: &amp;quot;testuser&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;test@example.com&amp;quot;}\n2026-08-27 17:09:53 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=201, \u8017\u65f6=0.793s\n2026-08-27 17:09:53 - INFO -    \u54cd\u5e94\u4f53: {&amp;quot;username&amp;quot;: &amp;quot;testuser&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;test@example.com&amp;quot;, &amp;quot;id&amp;quot;: 11}\n2026-08-27 17:09:53 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 201 == [201, 400]\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: POST https://jsonplaceholder.typicode.com/users\nINFO     api_test:request_util.py:46    \u8bf7\u6c42\u4f53: {&amp;quot;username&amp;quot;: &amp;quot;testuser&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;test@example.com&amp;quot;}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=201, \u8017\u65f6=0.793s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {&amp;quot;username&amp;quot;: &amp;quot;testuser&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;test@example.com&amp;quot;, &amp;quot;id&amp;quot;: 11}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 201 == [201, 400]\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-009: \u521b\u5efa\u7528\u6237email\u683c\u5f0f\u9519\u8bef]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-009: \u521b\u5efa\u7528\u6237email\u683c\u5f0f\u9519\u8bef]&#34;, &#34;duration&#34;: &#34;556 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-009: \u521b\u5efa\u7528\u6237email\u683c\u5f0f\u9519\u8bef]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;556 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:53 - INFO - \ud83d\udce4 \u8bf7\u6c42: POST https://jsonplaceholder.typicode.com/users\n2026-08-27 17:09:53 - INFO -    \u8bf7\u6c42\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;Test User&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;not-an-email&amp;quot;}\n2026-08-27 17:09:54 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=201, \u8017\u65f6=0.535s\n2026-08-27 17:09:54 - INFO -    \u54cd\u5e94\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;Test User&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;not-an-email&amp;quot;, &amp;quot;id&amp;quot;: 11}\n2026-08-27 17:09:54 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 201 == [201, 400]\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: POST https://jsonplaceholder.typicode.com/users\nINFO     api_test:request_util.py:46    \u8bf7\u6c42\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;Test User&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;not-an-email&amp;quot;}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=201, \u8017\u65f6=0.535s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;Test User&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;not-an-email&amp;quot;, &amp;quot;id&amp;quot;: 11}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 201 == [201, 400]\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-010: \u521b\u5efa\u7528\u6237name\u4e3a\u7a7a\u5b57\u7b26\u4e32]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-010: \u521b\u5efa\u7528\u6237name\u4e3a\u7a7a\u5b57\u7b26\u4e32]&#34;, &#34;duration&#34;: &#34;770 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-010: \u521b\u5efa\u7528\u6237name\u4e3a\u7a7a\u5b57\u7b26\u4e32]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;770 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:54 - INFO - \ud83d\udce4 \u8bf7\u6c42: POST https://jsonplaceholder.typicode.com/users\n2026-08-27 17:09:54 - INFO -    \u8bf7\u6c42\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;test@example.com&amp;quot;}\n2026-08-27 17:09:54 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=201, \u8017\u65f6=0.762s\n2026-08-27 17:09:54 - INFO -    \u54cd\u5e94\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;test@example.com&amp;quot;, &amp;quot;id&amp;quot;: 11}\n2026-08-27 17:09:54 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 201 == [201, 400]\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: POST https://jsonplaceholder.typicode.com/users\nINFO     api_test:request_util.py:46    \u8bf7\u6c42\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;test@example.com&amp;quot;}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=201, \u8017\u65f6=0.762s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;test@example.com&amp;quot;, &amp;quot;id&amp;quot;: 11}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 201 == [201, 400]\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-011: \u6b63\u5e38\u66f4\u65b0\u7528\u6237(PUT)]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-011: \u6b63\u5e38\u66f4\u65b0\u7528\u6237(PUT)]&#34;, &#34;duration&#34;: &#34;698 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-011: \u6b63\u5e38\u66f4\u65b0\u7528\u6237(PUT)]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;698 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:54 - INFO - \ud83d\udce4 \u8bf7\u6c42: PUT https://jsonplaceholder.typicode.com/users/1\n2026-08-27 17:09:54 - INFO -    \u8bf7\u6c42\u4f53: {&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Updated User&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;updateduser&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;updated@example.com&amp;quot;}\n2026-08-27 17:09:55 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.638s\n2026-08-27 17:09:55 - INFO -    \u54cd\u5e94\u4f53: {&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Updated User&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;updateduser&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;updated@example.com&amp;quot;}\n2026-08-27 17:09:55 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:09:55 - INFO - \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;name&amp;#x27;: &amp;#x27;Updated User&amp;#x27;}\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: PUT https://jsonplaceholder.typicode.com/users/1\nINFO     api_test:request_util.py:46    \u8bf7\u6c42\u4f53: {&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Updated User&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;updateduser&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;updated@example.com&amp;quot;}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.638s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Updated User&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;updateduser&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;updated@example.com&amp;quot;}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:68 \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;name&amp;#x27;: &amp;#x27;Updated User&amp;#x27;}\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-012: \u66f4\u65b0\u4e0d\u5b58\u5728\u7684\u7528\u6237]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-012: \u66f4\u65b0\u4e0d\u5b58\u5728\u7684\u7528\u6237]&#34;, &#34;duration&#34;: &#34;440 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-012: \u66f4\u65b0\u4e0d\u5b58\u5728\u7684\u7528\u6237]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;440 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:55 - INFO - \ud83d\udce4 \u8bf7\u6c42: PUT https://jsonplaceholder.typicode.com/users/9999\n2026-08-27 17:09:55 - INFO -    \u8bf7\u6c42\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;Test&amp;quot;}\n2026-08-27 17:09:56 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=500, \u8017\u65f6=0.433s\n2026-08-27 17:09:56 - INFO -    \u54cd\u5e94\u4f53: TypeError: Cannot read properties of undefined (reading &amp;#x27;id&amp;#x27;)\n    at update (/app/node_modules/json-server/lib/server/router/plural.js:262:24)\n    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)\n    at next (/app/node_modules/express/lib/router/route.js:137:13)\n    at next (/app/node_modules/express/lib/router/route.js:131:14)\n    at Route.dispatch (/app/node_modules/express/lib/router/route.js:112:3)\n    at Layer.handle [as handle_request] (/app/node_mod\n2026-08-27 17:09:56 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 500 == [404, 500]\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: PUT https://jsonplaceholder.typicode.com/users/9999\nINFO     api_test:request_util.py:46    \u8bf7\u6c42\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;Test&amp;quot;}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=500, \u8017\u65f6=0.433s\nINFO     api_test:request_util.py:57    \u54cd\u5e94\u4f53: TypeError: Cannot read properties of undefined (reading &amp;#x27;id&amp;#x27;)\n    at update (/app/node_modules/json-server/lib/server/router/plural.js:262:24)\n    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)\n    at next (/app/node_modules/express/lib/router/route.js:137:13)\n    at next (/app/node_modules/express/lib/router/route.js:131:14)\n    at Route.dispatch (/app/node_modules/express/lib/router/route.js:112:3)\n    at Layer.handle [as handle_request] (/app/node_mod\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 500 == [404, 500]\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-013: \u90e8\u5206\u66f4\u65b0\u7528\u6237(PATCH)]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-013: \u90e8\u5206\u66f4\u65b0\u7528\u6237(PATCH)]&#34;, &#34;duration&#34;: &#34;548 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-013: \u90e8\u5206\u66f4\u65b0\u7528\u6237(PATCH)]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;548 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:56 - INFO - \ud83d\udce4 \u8bf7\u6c42: PATCH https://jsonplaceholder.typicode.com/users/1\n2026-08-27 17:09:56 - INFO -    \u8bf7\u6c42\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;Partial Update&amp;quot;}\n2026-08-27 17:09:56 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.459s\n2026-08-27 17:09:56 - INFO -    \u54cd\u5e94\u4f53: {&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Partial Update&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Bret&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Sincere@april.biz&amp;quot;, &amp;quot;address&amp;quot;: {&amp;quot;street&amp;quot;: &amp;quot;Kulas Light&amp;quot;, &amp;quot;suite&amp;quot;: &amp;quot;Apt. 556&amp;quot;, &amp;quot;city&amp;quot;: &amp;quot;Gwenborough&amp;quot;, &amp;quot;zipcode&amp;quot;: &amp;quot;92998-3874&amp;quot;, &amp;quot;geo&amp;quot;: {&amp;quot;lat&amp;quot;: &amp;quot;-37.3159&amp;quot;, &amp;quot;lng&amp;quot;: &amp;quot;81.1496&amp;quot;}}, &amp;quot;phone&amp;quot;: &amp;quot;1-770-736-8031 x56442&amp;quot;, &amp;quot;website&amp;quot;: &amp;quot;hildegard.org&amp;quot;, &amp;quot;company&amp;quot;: {&amp;quot;name&amp;quot;: &amp;quot;Romaguera-Crona&amp;quot;, &amp;quot;catchPhrase&amp;quot;: &amp;quot;Multi-layered client-server neural-net&amp;quot;, &amp;quot;bs&amp;quot;: &amp;quot;harness real-time e-markets&amp;quot;}}\n2026-08-27 17:09:56 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:09:56 - INFO - \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;name&amp;#x27;: &amp;#x27;Partial Update&amp;#x27;}\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: PATCH https://jsonplaceholder.typicode.com/users/1\nINFO     api_test:request_util.py:46    \u8bf7\u6c42\u4f53: {&amp;quot;name&amp;quot;: &amp;quot;Partial Update&amp;quot;}\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.459s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Partial Update&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Bret&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Sincere@april.biz&amp;quot;, &amp;quot;address&amp;quot;: {&amp;quot;street&amp;quot;: &amp;quot;Kulas Light&amp;quot;, &amp;quot;suite&amp;quot;: &amp;quot;Apt. 556&amp;quot;, &amp;quot;city&amp;quot;: &amp;quot;Gwenborough&amp;quot;, &amp;quot;zipcode&amp;quot;: &amp;quot;92998-3874&amp;quot;, &amp;quot;geo&amp;quot;: {&amp;quot;lat&amp;quot;: &amp;quot;-37.3159&amp;quot;, &amp;quot;lng&amp;quot;: &amp;quot;81.1496&amp;quot;}}, &amp;quot;phone&amp;quot;: &amp;quot;1-770-736-8031 x56442&amp;quot;, &amp;quot;website&amp;quot;: &amp;quot;hildegard.org&amp;quot;, &amp;quot;company&amp;quot;: {&amp;quot;name&amp;quot;: &amp;quot;Romaguera-Crona&amp;quot;, &amp;quot;catchPhrase&amp;quot;: &amp;quot;Multi-layered client-server neural-net&amp;quot;, &amp;quot;bs&amp;quot;: &amp;quot;harness real-time e-markets&amp;quot;}}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:68 \u2705 \u5305\u542b\u65ad\u8a00\u901a\u8fc7: {&amp;#x27;name&amp;#x27;: &amp;#x27;Partial Update&amp;#x27;}\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-014: \u6b63\u5e38\u5220\u9664\u7528\u6237]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-014: \u6b63\u5e38\u5220\u9664\u7528\u6237]&#34;, &#34;duration&#34;: &#34;00:00:01&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-014: \u6b63\u5e38\u5220\u9664\u7528\u6237]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:01&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:56 - INFO - \ud83d\udce4 \u8bf7\u6c42: DELETE https://jsonplaceholder.typicode.com/users/1\n2026-08-27 17:09:57 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.180s\n2026-08-27 17:09:57 - INFO -    \u54cd\u5e94\u4f53: {}\n2026-08-27 17:09:57 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: DELETE https://jsonplaceholder.typicode.com/users/1\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.180s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-015: \u5220\u9664\u4e0d\u5b58\u5728\u7684\u7528\u6237]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-015: \u5220\u9664\u4e0d\u5b58\u5728\u7684\u7528\u6237]&#34;, &#34;duration&#34;: &#34;00:00:01&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-015: \u5220\u9664\u4e0d\u5b58\u5728\u7684\u7528\u6237]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:01&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:57 - INFO - \ud83d\udce4 \u8bf7\u6c42: DELETE https://jsonplaceholder.typicode.com/users/9999\n2026-08-27 17:09:59 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.257s\n2026-08-27 17:09:59 - INFO -    \u54cd\u5e94\u4f53: {}\n2026-08-27 17:09:59 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == [404, 200]\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: DELETE https://jsonplaceholder.typicode.com/users/9999\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.257s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == [404, 200]\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-016: \u83b7\u53d6\u7528\u6237\u5217\u8868\u54cd\u5e94\u65f6\u95f4]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-016: \u83b7\u53d6\u7528\u6237\u5217\u8868\u54cd\u5e94\u65f6\u95f4]&#34;, &#34;duration&#34;: &#34;00:00:01&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-016: \u83b7\u53d6\u7528\u6237\u5217\u8868\u54cd\u5e94\u65f6\u95f4]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;00:00:01&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:09:59 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users\n2026-08-27 17:10:00 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.204s\n2026-08-27 17:10:00 - INFO -    \u54cd\u5e94\u4f53: [{&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Leanne Graham&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Bret&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Sincere@april.biz&amp;quot;, &amp;quot;address&amp;quot;: {&amp;quot;street&amp;quot;: &amp;quot;Kulas Light&amp;quot;, &amp;quot;suite&amp;quot;: &amp;quot;Apt. 556&amp;quot;, &amp;quot;city&amp;quot;: &amp;quot;Gwenborough&amp;quot;, &amp;quot;zipcode&amp;quot;: &amp;quot;92998-3874&amp;quot;, &amp;quot;geo&amp;quot;: {&amp;quot;lat&amp;quot;: &amp;quot;-37.3159&amp;quot;, &amp;quot;lng&amp;quot;: &amp;quot;81.1496&amp;quot;}}, &amp;quot;phone&amp;quot;: &amp;quot;1-770-736-8031 x56442&amp;quot;, &amp;quot;website&amp;quot;: &amp;quot;hildegard.org&amp;quot;, &amp;quot;company&amp;quot;: {&amp;quot;name&amp;quot;: &amp;quot;Romaguera-Crona&amp;quot;, &amp;quot;catchPhrase&amp;quot;: &amp;quot;Multi-layered client-server neural-net&amp;quot;, &amp;quot;bs&amp;quot;: &amp;quot;harness real-time e-markets&amp;quot;}}, {&amp;quot;id&amp;quot;: 2, &amp;quot;name&amp;quot;: &amp;quot;Ervin Howell&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Antonette&amp;quot;, &amp;quot;emai\n2026-08-27 17:10:00 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:10:00 - INFO - \u2705 \u54cd\u5e94\u65f6\u95f4\u65ad\u8a00\u901a\u8fc7: 1.204s &amp;lt;= 5s\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=1.204s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: [{&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Leanne Graham&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Bret&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Sincere@april.biz&amp;quot;, &amp;quot;address&amp;quot;: {&amp;quot;street&amp;quot;: &amp;quot;Kulas Light&amp;quot;, &amp;quot;suite&amp;quot;: &amp;quot;Apt. 556&amp;quot;, &amp;quot;city&amp;quot;: &amp;quot;Gwenborough&amp;quot;, &amp;quot;zipcode&amp;quot;: &amp;quot;92998-3874&amp;quot;, &amp;quot;geo&amp;quot;: {&amp;quot;lat&amp;quot;: &amp;quot;-37.3159&amp;quot;, &amp;quot;lng&amp;quot;: &amp;quot;81.1496&amp;quot;}}, &amp;quot;phone&amp;quot;: &amp;quot;1-770-736-8031 x56442&amp;quot;, &amp;quot;website&amp;quot;: &amp;quot;hildegard.org&amp;quot;, &amp;quot;company&amp;quot;: {&amp;quot;name&amp;quot;: &amp;quot;Romaguera-Crona&amp;quot;, &amp;quot;catchPhrase&amp;quot;: &amp;quot;Multi-layered client-server neural-net&amp;quot;, &amp;quot;bs&amp;quot;: &amp;quot;harness real-time e-markets&amp;quot;}}, {&amp;quot;id&amp;quot;: 2, &amp;quot;name&amp;quot;: &amp;quot;Ervin Howell&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Antonette&amp;quot;, &amp;quot;emai\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:78 \u2705 \u54cd\u5e94\u65f6\u95f4\u65ad\u8a00\u901a\u8fc7: 1.204s &amp;lt;= 5s\n\n&#34;}], &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-017: \u9a8c\u8bc1\u54cd\u5e94Content-Type]&#34;: [{&#34;extras&#34;: [], &#34;result&#34;: &#34;Passed&#34;, &#34;testId&#34;: &#34;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-017: \u9a8c\u8bc1\u54cd\u5e94Content-Type]&#34;, &#34;duration&#34;: &#34;510 ms&#34;, &#34;resultsTableRow&#34;: [&#34;&lt;td class=\&#34;col-result\&#34;&gt;Passed&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-testId\&#34;&gt;tests/test_user_api.py::TestUserApi::test_user_api[TC-USER-017: \u9a8c\u8bc1\u54cd\u5e94Content-Type]&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-duration\&#34;&gt;510 ms&lt;/td&gt;&#34;, &#34;&lt;td class=\&#34;col-links\&#34;&gt;&lt;/td&gt;&#34;], &#34;log&#34;: &#34;----------------------------- Captured stderr call -----------------------------\n2026-08-27 17:10:00 - INFO - \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users/1\n2026-08-27 17:10:00 - INFO - \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.413s\n2026-08-27 17:10:00 - INFO -    \u54cd\u5e94\u4f53: {&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Leanne Graham&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Bret&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Sincere@april.biz&amp;quot;, &amp;quot;address&amp;quot;: {&amp;quot;street&amp;quot;: &amp;quot;Kulas Light&amp;quot;, &amp;quot;suite&amp;quot;: &amp;quot;Apt. 556&amp;quot;, &amp;quot;city&amp;quot;: &amp;quot;Gwenborough&amp;quot;, &amp;quot;zipcode&amp;quot;: &amp;quot;92998-3874&amp;quot;, &amp;quot;geo&amp;quot;: {&amp;quot;lat&amp;quot;: &amp;quot;-37.3159&amp;quot;, &amp;quot;lng&amp;quot;: &amp;quot;81.1496&amp;quot;}}, &amp;quot;phone&amp;quot;: &amp;quot;1-770-736-8031 x56442&amp;quot;, &amp;quot;website&amp;quot;: &amp;quot;hildegard.org&amp;quot;, &amp;quot;company&amp;quot;: {&amp;quot;name&amp;quot;: &amp;quot;Romaguera-Crona&amp;quot;, &amp;quot;catchPhrase&amp;quot;: &amp;quot;Multi-layered client-server neural-net&amp;quot;, &amp;quot;bs&amp;quot;: &amp;quot;harness real-time e-markets&amp;quot;}}\n2026-08-27 17:10:00 - INFO - \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\n2026-08-27 17:10:00 - INFO - \u2705 \u54cd\u5e94\u5934\u65ad\u8a00\u901a\u8fc7: content-type\n\n------------------------------ Captured log call -------------------------------\nINFO     api_test:request_util.py:42 \ud83d\udce4 \u8bf7\u6c42: GET https://jsonplaceholder.typicode.com/users/1\nINFO     api_test:request_util.py:52 \ud83d\udce5 \u54cd\u5e94: \u72b6\u6001\u7801=200, \u8017\u65f6=0.413s\nINFO     api_test:request_util.py:55    \u54cd\u5e94\u4f53: {&amp;quot;id&amp;quot;: 1, &amp;quot;name&amp;quot;: &amp;quot;Leanne Graham&amp;quot;, &amp;quot;username&amp;quot;: &amp;quot;Bret&amp;quot;, &amp;quot;email&amp;quot;: &amp;quot;Sincere@april.biz&amp;quot;, &amp;quot;address&amp;quot;: {&amp;quot;street&amp;quot;: &amp;quot;Kulas Light&amp;quot;, &amp;quot;suite&amp;quot;: &amp;quot;Apt. 556&amp;quot;, &amp;quot;city&amp;quot;: &amp;quot;Gwenborough&amp;quot;, &amp;quot;zipcode&amp;quot;: &amp;quot;92998-3874&amp;quot;, &amp;quot;geo&amp;quot;: {&amp;quot;lat&amp;quot;: &amp;quot;-37.3159&amp;quot;, &amp;quot;lng&amp;quot;: &amp;quot;81.1496&amp;quot;}}, &amp;quot;phone&amp;quot;: &amp;quot;1-770-736-8031 x56442&amp;quot;, &amp;quot;website&amp;quot;: &amp;quot;hildegard.org&amp;quot;, &amp;quot;company&amp;quot;: {&amp;quot;name&amp;quot;: &amp;quot;Romaguera-Crona&amp;quot;, &amp;quot;catchPhrase&amp;quot;: &amp;quot;Multi-layered client-server neural-net&amp;quot;, &amp;quot;bs&amp;quot;: &amp;quot;harness real-time e-markets&amp;quot;}}\nINFO     api_test:assert_util.py:29 \u2705 \u72b6\u6001\u7801\u65ad\u8a00\u901a\u8fc7: 200 == 200\nINFO     api_test:assert_util.py:127 \u2705 \u54cd\u5e94\u5934\u65ad\u8a00\u901a\u8fc7: content-type\n\n--------------------------- Captured stderr teardown ---------------------------\n2026-08-27 17:10:00 - INFO - \ud83c\udfc1 \u6d4b\u8bd5\u7ed3\u675f\n\n---------------------------- Captured log teardown -----------------------------\nINFO     api_test:conftest.py:26 \ud83c\udfc1 \u6d4b\u8bd5\u7ed3\u675f&#34;}]}, &#34;renderCollapsed&#34;: [&#34;passed&#34;], &#34;initialSort&#34;: &#34;result&#34;, &#34;title&#34;: &#34;report.html&#34;}"></div>
+    <script>
+      (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+const { getCollapsedCategory, setCollapsedIds } = require('./storage.js')
+
+class DataManager {
+    setManager(data) {
+        const collapsedCategories = [...getCollapsedCategory(data.renderCollapsed)]
+        const collapsedIds = []
+        const tests = Object.values(data.tests).flat().map((test, index) => {
+            const collapsed = collapsedCategories.includes(test.result.toLowerCase())
+            const id = `test_${index}`
+            if (collapsed) {
+                collapsedIds.push(id)
+            }
+            return {
+                ...test,
+                id,
+                collapsed,
+            }
+        })
+        const dataBlob = { ...data, tests }
+        this.data = { ...dataBlob }
+        this.renderData = { ...dataBlob }
+        setCollapsedIds(collapsedIds)
+    }
+
+    get allData() {
+        return { ...this.data }
+    }
+
+    resetRender() {
+        this.renderData = { ...this.data }
+    }
+
+    setRender(data) {
+        this.renderData.tests = [...data]
+    }
+
+    toggleCollapsedItem(id) {
+        this.renderData.tests = this.renderData.tests.map((test) =>
+            test.id === id ? { ...test, collapsed: !test.collapsed } : test,
+        )
+    }
+
+    set allCollapsed(collapsed) {
+        this.renderData = { ...this.renderData, tests: [...this.renderData.tests.map((test) => (
+            { ...test, collapsed }
+        ))] }
+    }
+
+    get testSubset() {
+        return [...this.renderData.tests]
+    }
+
+    get environment() {
+        return this.renderData.environment
+    }
+
+    get initialSort() {
+        return this.data.initialSort
+    }
+}
+
+module.exports = {
+    manager: new DataManager(),
+}
+
+},{"./storage.js":8}],2:[function(require,module,exports){
+const mediaViewer = require('./mediaviewer.js')
+const templateEnvRow = document.getElementById('template_environment_row')
+const templateResult = document.getElementById('template_results-table__tbody')
+
+function htmlToElements(html) {
+    const temp = document.createElement('template')
+    temp.innerHTML = html
+    return temp.content.childNodes
+}
+
+const find = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return elem.querySelector(selector)
+}
+
+const findAll = (selector, elem) => {
+    if (!elem) {
+        elem = document
+    }
+    return [...elem.querySelectorAll(selector)]
+}
+
+const dom = {
+    getStaticRow: (key, value) => {
+        const envRow = templateEnvRow.content.cloneNode(true)
+        const isObj = typeof value === 'object' && value !== null
+        const values = isObj ? Object.keys(value).map((k) => `${k}: ${value[k]}`) : null
+
+        const valuesElement = htmlToElements(
+            values ? `<ul>${values.map((val) => `<li>${val}</li>`).join('')}<ul>` : `<div>${value}</div>`)[0]
+        const td = findAll('td', envRow)
+        td[0].textContent = key
+        td[1].appendChild(valuesElement)
+
+        return envRow
+    },
+    getResultTBody: ({ testId, id, log, extras, resultsTableRow, tableHtml, result, collapsed }) => {
+        const resultBody = templateResult.content.cloneNode(true)
+        resultBody.querySelector('tbody').classList.add(result.toLowerCase())
+        resultBody.querySelector('tbody').id = testId
+        resultBody.querySelector('.collapsible').dataset.id = id
+
+        resultsTableRow.forEach((html) => {
+            const t = document.createElement('template')
+            t.innerHTML = html
+            resultBody.querySelector('.collapsible').appendChild(t.content)
+        })
+
+        if (log) {
+            // Wrap lines starting with "E" with span.error to color those lines red
+            const wrappedLog = log.replace(/^E.*$/gm, (match) => `<span class="error">${match}</span>`)
+            resultBody.querySelector('.log').innerHTML = wrappedLog
+        } else {
+            resultBody.querySelector('.log').remove()
+        }
+
+        if (collapsed) {
+            resultBody.querySelector('.collapsible > .col-result')?.classList.add('collapsed')
+            resultBody.querySelector('.extras-row').classList.add('hidden')
+        } else {
+            resultBody.querySelector('.collapsible > .col-result')?.classList.remove('collapsed')
+        }
+
+        const media = []
+        extras?.forEach(({ name, format_type, content }) => {
+            if (['image', 'video'].includes(format_type)) {
+                media.push({ path: content, name, format_type })
+            }
+
+            if (format_type === 'html') {
+                resultBody.querySelector('.extraHTML').insertAdjacentHTML('beforeend', `<div>${content}</div>`)
+            }
+        })
+        mediaViewer.setup(resultBody, media)
+
+        // Add custom html from the pytest_html_results_table_html hook
+        tableHtml?.forEach((item) => {
+            resultBody.querySelector('td[class="extra"]').insertAdjacentHTML('beforeend', item)
+        })
+
+        return resultBody
+    },
+}
+
+module.exports = {
+    dom,
+    htmlToElements,
+    find,
+    findAll,
+}
+
+},{"./mediaviewer.js":6}],3:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const storageModule = require('./storage.js')
+
+const getFilteredSubSet = (filter) =>
+    manager.allData.tests.filter(({ result }) => filter.includes(result.toLowerCase()))
+
+const doInitFilter = () => {
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+}
+
+const doFilter = (type, show) => {
+    if (show) {
+        storageModule.showCategory(type)
+    } else {
+        storageModule.hideCategory(type)
+    }
+
+    const currentFilter = storageModule.getVisible()
+    const filteredSubset = getFilteredSubSet(currentFilter)
+    manager.setRender(filteredSubset)
+
+    const sortColumn = storageModule.getSort()
+    doSort(sortColumn, true)
+}
+
+module.exports = {
+    doFilter,
+    doInitFilter,
+}
+
+},{"./datamanager.js":1,"./sort.js":7,"./storage.js":8}],4:[function(require,module,exports){
+const { redraw, bindEvents, renderStatic } = require('./main.js')
+const { doInitFilter } = require('./filter.js')
+const { doInitSort } = require('./sort.js')
+const { manager } = require('./datamanager.js')
+const data = JSON.parse(document.getElementById('data-container').dataset.jsonblob)
+
+function init() {
+    manager.setManager(data)
+    doInitFilter()
+    doInitSort()
+    renderStatic()
+    redraw()
+    bindEvents()
+}
+
+init()
+
+},{"./datamanager.js":1,"./filter.js":3,"./main.js":5,"./sort.js":7}],5:[function(require,module,exports){
+const { dom, find, findAll } = require('./dom.js')
+const { manager } = require('./datamanager.js')
+const { doSort } = require('./sort.js')
+const { doFilter } = require('./filter.js')
+const {
+    getVisible,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    getSortDirection,
+    possibleFilters,
+} = require('./storage.js')
+
+const removeChildren = (node) => {
+    while (node.firstChild) {
+        node.removeChild(node.firstChild)
+    }
+}
+
+const renderStatic = () => {
+    const renderEnvironmentTable = () => {
+        const environment = manager.environment
+        const rows = Object.keys(environment).map((key) => dom.getStaticRow(key, environment[key]))
+        const table = document.getElementById('environment')
+        removeChildren(table)
+        rows.forEach((row) => table.appendChild(row))
+    }
+    renderEnvironmentTable()
+}
+
+const addItemToggleListener = (elem) => {
+    elem.addEventListener('click', ({ target }) => {
+        const id = target.parentElement.dataset.id
+        manager.toggleCollapsedItem(id)
+
+        const collapsedIds = getCollapsedIds()
+        if (collapsedIds.includes(id)) {
+            const updated = collapsedIds.filter((item) => item !== id)
+            setCollapsedIds(updated)
+        } else {
+            collapsedIds.push(id)
+            setCollapsedIds(collapsedIds)
+        }
+        redraw()
+    })
+}
+
+const renderContent = (tests) => {
+    const sortAttr = getSort(manager.initialSort)
+    const sortAsc = JSON.parse(getSortDirection())
+    const rows = tests.map(dom.getResultTBody)
+    const table = document.getElementById('results-table')
+    const tableHeader = document.getElementById('results-table-head')
+
+    const newTable = document.createElement('table')
+    newTable.id = 'results-table'
+
+    // remove all sorting classes and set the relevant
+    findAll('.sortable', tableHeader).forEach((elem) => elem.classList.remove('asc', 'desc'))
+    tableHeader.querySelector(`.sortable[data-column-type="${sortAttr}"]`)?.classList.add(sortAsc ? 'desc' : 'asc')
+    newTable.appendChild(tableHeader)
+
+    if (!rows.length) {
+        const emptyTable = document.getElementById('template_results-table__body--empty').content.cloneNode(true)
+        newTable.appendChild(emptyTable)
+    } else {
+        rows.forEach((row) => {
+            if (!!row) {
+                findAll('.collapsible td:not(.col-links', row).forEach(addItemToggleListener)
+                find('.logexpander', row).addEventListener('click',
+                    (evt) => evt.target.parentNode.classList.toggle('expanded'),
+                )
+                newTable.appendChild(row)
+            }
+        })
+    }
+
+    table.replaceWith(newTable)
+}
+
+const renderDerived = () => {
+    const currentFilter = getVisible()
+    possibleFilters.forEach((result) => {
+        const input = document.querySelector(`input[data-test-result="${result}"]`)
+        input.checked = currentFilter.includes(result)
+    })
+}
+
+const bindEvents = () => {
+    const filterColumn = (evt) => {
+        const { target: element } = evt
+        const { testResult } = element.dataset
+
+        doFilter(testResult, element.checked)
+        const collapsedIds = getCollapsedIds()
+        const updated = manager.renderData.tests.map((test) => {
+            return {
+                ...test,
+                collapsed: collapsedIds.includes(test.id),
+            }
+        })
+        manager.setRender(updated)
+        redraw()
+    }
+
+    const header = document.getElementById('environment-header')
+    header.addEventListener('click', () => {
+        const table = document.getElementById('environment')
+        table.classList.toggle('hidden')
+        header.classList.toggle('collapsed')
+    })
+
+    findAll('input[name="filter_checkbox"]').forEach((elem) => {
+        elem.addEventListener('click', filterColumn)
+    })
+
+    findAll('.sortable').forEach((elem) => {
+        elem.addEventListener('click', (evt) => {
+            const { target: element } = evt
+            const { columnType } = element.dataset
+            doSort(columnType)
+            redraw()
+        })
+    })
+
+    document.getElementById('show_all_details').addEventListener('click', () => {
+        manager.allCollapsed = false
+        setCollapsedIds([])
+        redraw()
+    })
+    document.getElementById('hide_all_details').addEventListener('click', () => {
+        manager.allCollapsed = true
+        const allIds = manager.renderData.tests.map((test) => test.id)
+        setCollapsedIds(allIds)
+        redraw()
+    })
+}
+
+const redraw = () => {
+    const { testSubset } = manager
+
+    renderContent(testSubset)
+    renderDerived()
+}
+
+module.exports = {
+    redraw,
+    bindEvents,
+    renderStatic,
+}
+
+},{"./datamanager.js":1,"./dom.js":2,"./filter.js":3,"./sort.js":7,"./storage.js":8}],6:[function(require,module,exports){
+class MediaViewer {
+    constructor(assets) {
+        this.assets = assets
+        this.index = 0
+    }
+
+    nextActive() {
+        this.index = this.index === this.assets.length - 1 ? 0 : this.index + 1
+        return [this.activeFile, this.index]
+    }
+
+    prevActive() {
+        this.index = this.index === 0 ? this.assets.length - 1 : this.index -1
+        return [this.activeFile, this.index]
+    }
+
+    get currentIndex() {
+        return this.index
+    }
+
+    get activeFile() {
+        return this.assets[this.index]
+    }
+}
+
+
+const setup = (resultBody, assets) => {
+    if (!assets.length) {
+        resultBody.querySelector('.media').classList.add('hidden')
+        return
+    }
+
+    const mediaViewer = new MediaViewer(assets)
+    const container = resultBody.querySelector('.media-container')
+    const leftArrow = resultBody.querySelector('.media-container__nav--left')
+    const rightArrow = resultBody.querySelector('.media-container__nav--right')
+    const mediaName = resultBody.querySelector('.media__name')
+    const counter = resultBody.querySelector('.media__counter')
+    const imageEl = resultBody.querySelector('img')
+    const sourceEl = resultBody.querySelector('source')
+    const videoEl = resultBody.querySelector('video')
+
+    const setImg = (media, index) => {
+        if (media?.format_type === 'image') {
+            imageEl.src = media.path
+
+            imageEl.classList.remove('hidden')
+            videoEl.classList.add('hidden')
+        } else if (media?.format_type === 'video') {
+            sourceEl.src = media.path
+
+            videoEl.classList.remove('hidden')
+            imageEl.classList.add('hidden')
+        }
+
+        mediaName.innerText = media?.name
+        counter.innerText = `${index + 1} / ${assets.length}`
+    }
+    setImg(mediaViewer.activeFile, mediaViewer.currentIndex)
+
+    const moveLeft = () => {
+        const [media, index] = mediaViewer.prevActive()
+        setImg(media, index)
+    }
+    const doRight = () => {
+        const [media, index] = mediaViewer.nextActive()
+        setImg(media, index)
+    }
+    const openImg = () => {
+        window.open(mediaViewer.activeFile.path, '_blank')
+    }
+    if (assets.length === 1) {
+        container.classList.add('media-container--fullscreen')
+    } else {
+        leftArrow.addEventListener('click', moveLeft)
+        rightArrow.addEventListener('click', doRight)
+    }
+    imageEl.addEventListener('click', openImg)
+}
+
+module.exports = {
+    setup,
+}
+
+},{}],7:[function(require,module,exports){
+const { manager } = require('./datamanager.js')
+const storageModule = require('./storage.js')
+
+const genericSort = (list, key, ascending, customOrder) => {
+    let sorted
+    if (customOrder) {
+        sorted = list.sort((a, b) => {
+            const aValue = a.result.toLowerCase()
+            const bValue = b.result.toLowerCase()
+
+            const aIndex = customOrder.findIndex((item) => item.toLowerCase() === aValue)
+            const bIndex = customOrder.findIndex((item) => item.toLowerCase() === bValue)
+
+            // Compare the indices to determine the sort order
+            return aIndex - bIndex
+        })
+    } else {
+        sorted = list.sort((a, b) => a[key] === b[key] ? 0 : a[key] > b[key] ? 1 : -1)
+    }
+
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const durationSort = (list, ascending) => {
+    const parseDuration = (duration) => {
+        if (duration.includes(':')) {
+            // If it's in the format "HH:mm:ss"
+            const [hours, minutes, seconds] = duration.split(':').map(Number)
+            return (hours * 3600 + minutes * 60 + seconds) * 1000
+        } else {
+            // If it's in the format "nnn ms"
+            return parseInt(duration)
+        }
+    }
+    const sorted = list.sort((a, b) => parseDuration(a['duration']) - parseDuration(b['duration']))
+    if (ascending) {
+        sorted.reverse()
+    }
+    return sorted
+}
+
+const doInitSort = () => {
+    const type = storageModule.getSort(manager.initialSort)
+    const ascending = storageModule.getSortDirection()
+    const list = manager.testSubset
+    const initialOrder = ['Error', 'Failed', 'Rerun', 'XFailed', 'XPassed', 'Skipped', 'Passed']
+
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    if (type?.toLowerCase() === 'original') {
+        manager.setRender(list)
+    } else {
+        let sortedList
+        switch (type) {
+        case 'duration':
+            sortedList = durationSort(list, ascending)
+            break
+        case 'result':
+            sortedList = genericSort(list, type, ascending, initialOrder)
+            break
+        default:
+            sortedList = genericSort(list, type, ascending)
+            break
+        }
+        manager.setRender(sortedList)
+    }
+}
+
+const doSort = (type, skipDirection) => {
+    const newSortType = storageModule.getSort(manager.initialSort) !== type
+    const currentAsc = storageModule.getSortDirection()
+    let ascending
+    if (skipDirection) {
+        ascending = currentAsc
+    } else {
+        ascending = newSortType ? false : !currentAsc
+    }
+    storageModule.setSort(type)
+    storageModule.setSortDirection(ascending)
+
+    const list = manager.testSubset
+    const sortedList = type === 'duration' ? durationSort(list, ascending) : genericSort(list, type, ascending)
+    manager.setRender(sortedList)
+}
+
+module.exports = {
+    doInitSort,
+    doSort,
+}
+
+},{"./datamanager.js":1,"./storage.js":8}],8:[function(require,module,exports){
+const possibleFilters = [
+    'passed',
+    'skipped',
+    'failed',
+    'error',
+    'xfailed',
+    'xpassed',
+    'rerun',
+]
+
+const getVisible = () => {
+    const url = new URL(window.location.href)
+    const settings = new URLSearchParams(url.search).get('visible')
+    const lower = (item) => {
+        const lowerItem = item.toLowerCase()
+        if (possibleFilters.includes(lowerItem)) {
+            return lowerItem
+        }
+        return null
+    }
+    return settings === null ?
+        possibleFilters :
+        [...new Set(settings?.split(',').map(lower).filter((item) => item))]
+}
+
+const hideCategory = (categoryToHide) => {
+    const url = new URL(window.location.href)
+    const visibleParams = new URLSearchParams(url.search).get('visible')
+    const currentVisible = visibleParams ? visibleParams.split(',') : [...possibleFilters]
+    const settings = [...new Set(currentVisible)].filter((f) => f !== categoryToHide).join(',')
+
+    url.searchParams.set('visible', settings)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const showCategory = (categoryToShow) => {
+    if (typeof window === 'undefined') {
+        return
+    }
+    const url = new URL(window.location.href)
+    const currentVisible = new URLSearchParams(url.search).get('visible')?.split(',').filter(Boolean) ||
+        [...possibleFilters]
+    const settings = [...new Set([categoryToShow, ...currentVisible])]
+    const noFilter = possibleFilters.length === settings.length || !settings.length
+
+    noFilter ? url.searchParams.delete('visible') : url.searchParams.set('visible', settings.join(','))
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getSort = (initialSort) => {
+    const url = new URL(window.location.href)
+    let sort = new URLSearchParams(url.search).get('sort')
+    if (!sort) {
+        sort = initialSort || 'result'
+    }
+    return sort
+}
+
+const setSort = (type) => {
+    const url = new URL(window.location.href)
+    url.searchParams.set('sort', type)
+    window.history.pushState({}, null, unescape(url.href))
+}
+
+const getCollapsedCategory = (renderCollapsed) => {
+    let categories
+    if (typeof window !== 'undefined') {
+        const url = new URL(window.location.href)
+        const collapsedItems = new URLSearchParams(url.search).get('collapsed')
+        switch (true) {
+        case !renderCollapsed && collapsedItems === null:
+            categories = ['passed']
+            break
+        case collapsedItems?.length === 0 || /^["']{2}$/.test(collapsedItems):
+            categories = []
+            break
+        case /^all$/.test(collapsedItems) || collapsedItems === null && /^all$/.test(renderCollapsed):
+            categories = [...possibleFilters]
+            break
+        default:
+            categories = collapsedItems?.split(',').map((item) => item.toLowerCase()) || renderCollapsed
+            break
+        }
+    } else {
+        categories = []
+    }
+    return categories
+}
+
+const getSortDirection = () => JSON.parse(sessionStorage.getItem('sortAsc')) || false
+const setSortDirection = (ascending) => sessionStorage.setItem('sortAsc', ascending)
+
+const getCollapsedIds = () => JSON.parse(sessionStorage.getItem('collapsedIds')) || []
+const setCollapsedIds = (list) => sessionStorage.setItem('collapsedIds', JSON.stringify(list))
+
+module.exports = {
+    getVisible,
+    hideCategory,
+    showCategory,
+    getCollapsedIds,
+    setCollapsedIds,
+    getSort,
+    setSort,
+    getSortDirection,
+    setSortDirection,
+    getCollapsedCategory,
+    possibleFilters,
+}
+
+},{}]},{},[4]);
+    </script>
+  </footer>
+  </body>
+</html>

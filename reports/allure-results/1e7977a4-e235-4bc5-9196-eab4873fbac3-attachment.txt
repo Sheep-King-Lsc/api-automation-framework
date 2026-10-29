@@ -1,0 +1,4 @@
+[32mINFO    [0m api_test:request_util.py:42 📤 请求: GET https://jsonplaceholder.typicode.com/posts/99999
+[32mINFO    [0m api_test:request_util.py:52 📥 响应: 状态码=404, 耗时=0.394s
+[32mINFO    [0m api_test:request_util.py:55    响应体: {}
+[32mINFO    [0m api_test:assert_util.py:29 ✅ 状态码断言通过: 404 == 404

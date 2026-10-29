@@ -1,0 +1,1 @@
+{"uuid": "6261734d-5f91-4e4d-8b09-6642cd95b86b", "befores": [{"name": "case_name", "status": "passed", "start": 1787821490978, "stop": 1787821490978}], "afters": [{"name": "case_name::<lambda>", "start": 1787821491037}], "start": 1787821490978, "stop": 1787821491037}

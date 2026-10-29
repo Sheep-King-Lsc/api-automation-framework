@@ -1,0 +1,30 @@
+# 环境配置文件
+# 可通过修改 ENV 切换测试环境
+
+default:
+  ENV: test
+  TIMEOUT: 10
+  RERUN_TIMES: 2
+
+environments:
+  dev:
+    base_url: "https://jsonplaceholder.typicode.com"
+    timeout: 15
+
+  test:
+    base_url: "https://jsonplaceholder.typicode.com"
+    timeout: 10
+
+  prod:
+    base_url: "https://jsonplaceholder.typicode.com"
+    timeout: 5
+
+# 测试账号
+test_account:
+  username: "test_user"
+  password: "test123456"
+
+# 性能阈值
+performance:
+  max_response_time: 3
+  max_error_rate: 0.01

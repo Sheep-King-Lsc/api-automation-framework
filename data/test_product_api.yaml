@@ -1,0 +1,170 @@
+# 商品模块接口测试数据
+# 测试对象：jsonplaceholder.typicode.com/posts（模拟商品）
+
+test_cases:
+  # ===== 获取商品列表 =====
+  - name: "TC-PROD-001: 正常获取商品列表"
+    request:
+      method: GET
+      url: "/posts"
+    expected:
+      status_code: 200
+      list_not_empty: true
+
+  - name: "TC-PROD-002: 分页获取商品"
+    request:
+      method: GET
+      url: "/posts"
+      params:
+        _page: 2
+        _limit: 10
+    expected:
+      status_code: 200
+      list_length: 10
+
+  - name: "TC-PROD-003: 按用户ID筛选商品"
+    request:
+      method: GET
+      url: "/posts"
+      params:
+        userId: 1
+    expected:
+      status_code: 200
+      list_not_empty: true
+
+  - name: "TC-PROD-004: 按标题搜索商品"
+    request:
+      method: GET
+      url: "/posts"
+      params:
+        q: "sunt"
+    expected:
+      status_code: 200
+
+  - name: "TC-PROD-005: 按ID排序商品"
+    request:
+      method: GET
+      url: "/posts"
+      params:
+        _sort: id
+        _order: desc
+    expected:
+      status_code: 200
+      list_not_empty: true
+
+  # ===== 获取单个商品 =====
+  - name: "TC-PROD-006: 正常获取商品详情"
+    request:
+      method: GET
+      url: "/posts/1"
+    expected:
+      status_code: 200
+      json_contains:
+        id: 1
+        userId: 1
+
+  - name: "TC-PROD-007: 获取不存在的商品"
+    request:
+      method: GET
+      url: "/posts/99999"
+    expected:
+      status_code: 404
+
+  # ===== 创建商品 =====
+  - name: "TC-PROD-008: 正常创建商品"
+    request:
+      method: POST
+      url: "/posts"
+      json:
+        title: "测试商品"
+        body: "这是一个测试商品的描述"
+        userId: 1
+    expected:
+      status_code: 201
+      json_contains:
+        title: "测试商品"
+        body: "这是一个测试商品的描述"
+        userId: 1
+
+  - name: "TC-PROD-009: 创建商品缺少title"
+    request:
+      method: POST
+      url: "/posts"
+      json:
+        body: "只有描述没有标题"
+        userId: 1
+    expected:
+      status_code: [201, 400]
+
+  - name: "TC-PROD-010: 创建商品title为空"
+    request:
+      method: POST
+      url: "/posts"
+      json:
+        title: ""
+        body: "测试"
+        userId: 1
+    expected:
+      status_code: [201, 400]
+
+  # ===== 更新商品 =====
+  - name: "TC-PROD-011: 正常更新商品"
+    request:
+      method: PUT
+      url: "/posts/1"
+      json:
+        id: 1
+        title: "更新后的商品标题"
+        body: "更新后的描述"
+        userId: 1
+    expected:
+      status_code: 200
+      json_contains:
+        title: "更新后的商品标题"
+
+  - name: "TC-PROD-012: 部分更新商品"
+    request:
+      method: PATCH
+      url: "/posts/1"
+      json:
+        title: "部分更新标题"
+    expected:
+      status_code: 200
+      json_contains:
+        title: "部分更新标题"
+
+  # ===== 删除商品 =====
+  - name: "TC-PROD-013: 正常删除商品"
+    request:
+      method: DELETE
+      url: "/posts/1"
+    expected:
+      status_code: 200
+
+  # ===== 嵌套资源 =====
+  - name: "TC-PROD-014: 获取商品的评论"
+    request:
+      method: GET
+      url: "/posts/1/comments"
+    expected:
+      status_code: 200
+      list_not_empty: true
+
+  - name: "TC-PROD-015: 获取商品评论数量"
+    request:
+      method: GET
+      url: "/posts/1/comments"
+    expected:
+      status_code: 200
+      list_length: 5
+
+  # ===== 性能 =====
+  - name: "TC-PROD-016: 商品列表响应时间"
+    request:
+      method: GET
+      url: "/posts"
+      params:
+        _limit: 20
+    expected:
+      status_code: 200
+      response_time: 3
