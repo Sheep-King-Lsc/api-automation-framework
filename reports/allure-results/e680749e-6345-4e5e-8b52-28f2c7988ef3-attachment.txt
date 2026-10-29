@@ -1,0 +1,6 @@
+INFO     api_test:request_util.py:42 📤 请求: PATCH https://jsonplaceholder.typicode.com/posts/1
+INFO     api_test:request_util.py:46    请求体: {"title": "部分更新标题"}
+INFO     api_test:request_util.py:52 📥 响应: 状态码=200, 耗时=0.269s
+INFO     api_test:request_util.py:55    响应体: {"userId": 1, "id": 1, "title": "部分更新标题", "body": "quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto"}
+INFO     api_test:assert_util.py:29 ✅ 状态码断言通过: 200 == 200
+INFO     api_test:assert_util.py:68 ✅ 包含断言通过: {'title': '部分更新标题'}

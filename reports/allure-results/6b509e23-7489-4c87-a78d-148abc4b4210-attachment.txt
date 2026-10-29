@@ -1,0 +1,4 @@
+INFO     api_test:request_util.py:42 📤 请求: GET https://jsonplaceholder.typicode.com/users/abc
+INFO     api_test:request_util.py:52 📥 响应: 状态码=404, 耗时=0.273s
+INFO     api_test:request_util.py:55    响应体: {}
+INFO     api_test:assert_util.py:29 ✅ 状态码断言通过: 404 == [404, 500]

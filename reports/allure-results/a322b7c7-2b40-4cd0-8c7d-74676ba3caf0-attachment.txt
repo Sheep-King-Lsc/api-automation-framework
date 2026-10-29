@@ -1,0 +1,11 @@
+2026-10-29 16:36:11 - INFO - 📤 请求: PUT https://jsonplaceholder.typicode.com/users/9999
+2026-10-29 16:36:11 - INFO -    请求体: {"name": "Test"}
+2026-10-29 16:36:11 - INFO - 📥 响应: 状态码=500, 耗时=0.698s
+2026-10-29 16:36:11 - INFO -    响应体: TypeError: Cannot read properties of undefined (reading 'id')
+    at update (/app/node_modules/json-server/lib/server/router/plural.js:262:24)
+    at Layer.handle [as handle_request] (/app/node_modules/express/lib/router/layer.js:95:5)
+    at next (/app/node_modules/express/lib/router/route.js:137:13)
+    at next (/app/node_modules/express/lib/router/route.js:131:14)
+    at Route.dispatch (/app/node_modules/express/lib/router/route.js:112:3)
+    at Layer.handle [as handle_request] (/app/node_mod
+2026-10-29 16:36:11 - INFO - ✅ 状态码断言通过: 500 == [404, 500]

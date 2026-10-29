@@ -1,0 +1,6 @@
+INFO     api_test:request_util.py:42 📤 请求: GET https://jsonplaceholder.typicode.com/posts
+INFO     api_test:request_util.py:44    参数: {'_page': 2, '_limit': 10}
+INFO     api_test:request_util.py:52 📥 响应: 状态码=200, 耗时=0.068s
+INFO     api_test:request_util.py:55    响应体: [{"userId": 2, "id": 11, "title": "et ea vero quia laudantium autem", "body": "delectus reiciendis molestiae occaecati non minima eveniet qui voluptatibus\naccusamus in eum beatae sit\nvel qui neque voluptates ut commodi qui incidunt\nut animi commodi"}, {"userId": 2, "id": 12, "title": "in quibusdam tempore odit est dolorem", "body": "itaque id aut magnam\npraesentium quia et ea odit et ea voluptas et\nsapiente quia nihil amet occaecati quia id voluptatem\nincidunt ea est distinctio odio"}, {"u
+INFO     api_test:assert_util.py:29 ✅ 状态码断言通过: 200 == 200
+INFO     api_test:assert_util.py:94 ✅ 列表长度断言通过: 10

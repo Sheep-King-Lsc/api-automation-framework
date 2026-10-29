@@ -1,4 +1,0 @@
-[32mINFO    [0m api_test:request_util.py:42 📤 请求: DELETE https://jsonplaceholder.typicode.com/users/9999
-[32mINFO    [0m api_test:request_util.py:52 📥 响应: 状态码=200, 耗时=1.257s
-[32mINFO    [0m api_test:request_util.py:55    响应体: {}
-[32mINFO    [0m api_test:assert_util.py:29 ✅ 状态码断言通过: 200 == [404, 200]

@@ -1,0 +1,5 @@
+INFO     api_test:request_util.py:42 📤 请求: GET https://jsonplaceholder.typicode.com/posts/1/comments
+INFO     api_test:request_util.py:52 📥 响应: 状态码=200, 耗时=0.030s
+INFO     api_test:request_util.py:55    响应体: [{"postId": 1, "id": 1, "name": "id labore ex et quam laborum", "email": "Eliseo@gardner.biz", "body": "laudantium enim quasi est quidem magnam voluptate ipsam eos\ntempora quo necessitatibus\ndolor quam autem quasi\nreiciendis et nam sapiente accusantium"}, {"postId": 1, "id": 2, "name": "quo vero reiciendis velit similique earum", "email": "Jayne_Kuhic@sydney.com", "body": "est natus enim nihil est dolore omnis voluptatem numquam\net omnis occaecati quod ullam at\nvoluptatem error expedita par
+INFO     api_test:assert_util.py:29 ✅ 状态码断言通过: 200 == 200
+INFO     api_test:assert_util.py:94 ✅ 列表长度断言通过: 5

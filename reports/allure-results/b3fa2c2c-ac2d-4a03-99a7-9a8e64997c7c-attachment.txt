@@ -1,0 +1,5 @@
+2026-10-29 16:36:07 - INFO - 📤 请求: GET https://jsonplaceholder.typicode.com/posts/1/comments
+2026-10-29 16:36:07 - INFO - 📥 响应: 状态码=200, 耗时=0.045s
+2026-10-29 16:36:07 - INFO -    响应体: [{"postId": 1, "id": 1, "name": "id labore ex et quam laborum", "email": "Eliseo@gardner.biz", "body": "laudantium enim quasi est quidem magnam voluptate ipsam eos\ntempora quo necessitatibus\ndolor quam autem quasi\nreiciendis et nam sapiente accusantium"}, {"postId": 1, "id": 2, "name": "quo vero reiciendis velit similique earum", "email": "Jayne_Kuhic@sydney.com", "body": "est natus enim nihil est dolore omnis voluptatem numquam\net omnis occaecati quod ullam at\nvoluptatem error expedita par
+2026-10-29 16:36:07 - INFO - ✅ 状态码断言通过: 200 == 200
+2026-10-29 16:36:07 - INFO - ✅ 列表非空断言通过: 长度=5

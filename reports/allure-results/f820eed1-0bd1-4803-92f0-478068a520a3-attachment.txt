@@ -1,0 +1,6 @@
+INFO     api_test:request_util.py:42 📤 请求: PUT https://jsonplaceholder.typicode.com/users/1
+INFO     api_test:request_util.py:46    请求体: {"id": 1, "name": "Updated User", "username": "updateduser", "email": "updated@example.com"}
+INFO     api_test:request_util.py:52 📥 响应: 状态码=200, 耗时=0.713s
+INFO     api_test:request_util.py:55    响应体: {"id": 1, "name": "Updated User", "username": "updateduser", "email": "updated@example.com"}
+INFO     api_test:assert_util.py:29 ✅ 状态码断言通过: 200 == 200
+INFO     api_test:assert_util.py:68 ✅ 包含断言通过: {'name': 'Updated User'}

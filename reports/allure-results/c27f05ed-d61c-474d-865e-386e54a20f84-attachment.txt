@@ -1,3 +1,0 @@
-2026-08-27 17:08:51 - INFO - 🚀 测试开始，基础URL: https://jsonplaceholder.typicode.com
-2026-08-27 17:08:51 - INFO - 📤 请求: GET https://jsonplaceholder.typicode.com/posts
-2026-08-27 17:09:02 - ERROR - ❌ 请求超时: https://jsonplaceholder.typicode.com/posts

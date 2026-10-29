@@ -1,0 +1,6 @@
+2026-10-29 16:36:11 - INFO - 📤 请求: PATCH https://jsonplaceholder.typicode.com/users/1
+2026-10-29 16:36:11 - INFO -    请求体: {"name": "Partial Update"}
+2026-10-29 16:36:12 - INFO - 📥 响应: 状态码=200, 耗时=0.321s
+2026-10-29 16:36:12 - INFO -    响应体: {"id": 1, "name": "Partial Update", "username": "Bret", "email": "Sincere@april.biz", "address": {"street": "Kulas Light", "suite": "Apt. 556", "city": "Gwenborough", "zipcode": "92998-3874", "geo": {"lat": "-37.3159", "lng": "81.1496"}}, "phone": "1-770-736-8031 x56442", "website": "hildegard.org", "company": {"name": "Romaguera-Crona", "catchPhrase": "Multi-layered client-server neural-net", "bs": "harness real-time e-markets"}}
+2026-10-29 16:36:12 - INFO - ✅ 状态码断言通过: 200 == 200
+2026-10-29 16:36:12 - INFO - ✅ 包含断言通过: {'name': 'Partial Update'}

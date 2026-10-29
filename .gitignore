@@ -1,4 +1,4 @@
-# Python
+﻿# Python
 __pycache__/
 *.py[cod]
 *.so
@@ -20,6 +20,9 @@ env/
 .idea/
 .vscode/
 *.swp
+
+# 日志（忽略运行日志）
+logs/
 
 # 系统
 .DS_Store

@@ -1,6 +1,0 @@
-[32mINFO    [0m api_test:request_util.py:42 📤 请求: POST https://jsonplaceholder.typicode.com/posts
-[32mINFO    [0m api_test:request_util.py:46    请求体: {"title": "测试商品", "body": "这是一个测试商品的描述", "userId": 1}
-[32mINFO    [0m api_test:request_util.py:52 📥 响应: 状态码=201, 耗时=0.465s
-[32mINFO    [0m api_test:request_util.py:55    响应体: {"title": "测试商品", "body": "这是一个测试商品的描述", "userId": 1, "id": 101}
-[32mINFO    [0m api_test:assert_util.py:29 ✅ 状态码断言通过: 201 == 201
-[32mINFO    [0m api_test:assert_util.py:68 ✅ 包含断言通过: {'title': '测试商品', 'body': '这是一个测试商品的描述', 'userId': 1}
