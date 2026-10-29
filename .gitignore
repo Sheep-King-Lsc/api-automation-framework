@@ -24,6 +24,9 @@ env/
 # 日志（忽略运行日志）
 logs/
 
+# Allure 原始结果（保留HTML报告，忽略中间产物）
+reports/allure-results/
+
 # 系统
 .DS_Store
 Thumbs.db

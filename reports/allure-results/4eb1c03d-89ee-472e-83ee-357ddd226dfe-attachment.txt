@@ -1,6 +1,0 @@
-INFO     api_test:request_util.py:42 📤 请求: POST https://jsonplaceholder.typicode.com/users
-INFO     api_test:request_util.py:46    请求体: {"name": "Test User", "username": "testuser", "email": "test@example.com", "phone": "123-456-7890"}
-INFO     api_test:request_util.py:52 📥 响应: 状态码=201, 耗时=0.269s
-INFO     api_test:request_util.py:55    响应体: {"name": "Test User", "username": "testuser", "email": "test@example.com", "phone": "123-456-7890", "id": 11}
-INFO     api_test:assert_util.py:29 ✅ 状态码断言通过: 201 == 201
-INFO     api_test:assert_util.py:68 ✅ 包含断言通过: {'name': 'Test User', 'username': 'testuser', 'email': 'test@example.com'}

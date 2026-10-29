@@ -1,6 +1,0 @@
-2026-10-29 16:36:08 - INFO - 📤 请求: POST https://jsonplaceholder.typicode.com/users
-2026-10-29 16:36:08 - INFO -    请求体: {"name": "Test User", "username": "testuser", "email": "test@example.com", "phone": "123-456-7890"}
-2026-10-29 16:36:09 - INFO - 📥 响应: 状态码=201, 耗时=0.269s
-2026-10-29 16:36:09 - INFO -    响应体: {"name": "Test User", "username": "testuser", "email": "test@example.com", "phone": "123-456-7890", "id": 11}
-2026-10-29 16:36:09 - INFO - ✅ 状态码断言通过: 201 == 201
-2026-10-29 16:36:09 - INFO - ✅ 包含断言通过: {'name': 'Test User', 'username': 'testuser', 'email': 'test@example.com'}

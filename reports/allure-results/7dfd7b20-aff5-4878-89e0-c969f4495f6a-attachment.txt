@@ -1,6 +1,0 @@
-2026-10-29 16:36:10 - INFO - 📤 请求: PUT https://jsonplaceholder.typicode.com/users/1
-2026-10-29 16:36:10 - INFO -    请求体: {"id": 1, "name": "Updated User", "username": "updateduser", "email": "updated@example.com"}
-2026-10-29 16:36:11 - INFO - 📥 响应: 状态码=200, 耗时=0.713s
-2026-10-29 16:36:11 - INFO -    响应体: {"id": 1, "name": "Updated User", "username": "updateduser", "email": "updated@example.com"}
-2026-10-29 16:36:11 - INFO - ✅ 状态码断言通过: 200 == 200
-2026-10-29 16:36:11 - INFO - ✅ 包含断言通过: {'name': 'Updated User'}

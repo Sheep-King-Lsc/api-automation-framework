@@ -1,5 +1,0 @@
-INFO     api_test:request_util.py:42 📤 请求: POST https://jsonplaceholder.typicode.com/posts
-INFO     api_test:request_util.py:46    请求体: {"title": "", "body": "测试", "userId": 1}
-INFO     api_test:request_util.py:52 📥 响应: 状态码=201, 耗时=0.333s
-INFO     api_test:request_util.py:55    响应体: {"title": "", "body": "测试", "userId": 1, "id": 101}
-INFO     api_test:assert_util.py:29 ✅ 状态码断言通过: 201 == [201, 400]

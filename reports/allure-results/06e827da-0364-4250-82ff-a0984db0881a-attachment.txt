@@ -1,6 +1,0 @@
-INFO     api_test:request_util.py:42 📤 请求: GET https://jsonplaceholder.typicode.com/users/1
-INFO     api_test:request_util.py:52 📥 响应: 状态码=200, 耗时=0.076s
-INFO     api_test:request_util.py:55    响应体: {"id": 1, "name": "Leanne Graham", "username": "Bret", "email": "Sincere@april.biz", "address": {"street": "Kulas Light", "suite": "Apt. 556", "city": "Gwenborough", "zipcode": "92998-3874", "geo": {"lat": "-37.3159", "lng": "81.1496"}}, "phone": "1-770-736-8031 x56442", "website": "hildegard.org", "company": {"name": "Romaguera-Crona", "catchPhrase": "Multi-layered client-server neural-net", "bs": "harness real-time e-markets"}}
-INFO     api_test:assert_util.py:29 ✅ 状态码断言通过: 200 == 200
-INFO     api_test:assert_util.py:127 ✅ 响应头断言通过: content-type
-INFO     api_test:conftest.py:26 🏁 测试结束
